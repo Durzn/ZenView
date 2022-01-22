@@ -1,0 +1,33 @@
+{
+	"name": "comfort view",
+	"displayName": "Comfort View",
+	"description": "Comfort view for project structures.",
+	"version": "0.0.1",
+	"publisher": "durzn",
+	"engines": {
+	  "vscode": "^1.42.0"
+	},
+	"activationEvents": ["onView:comfortView"],
+	"main": "./out/extension.js",
+	"contributes": {
+	  "views": {
+		"explorer": [
+		  {
+			"id": "comfortView",
+			"name": "Comfort View"
+		  }
+		]
+	  }
+	},
+	"scripts": {
+	  "vscode:prepublish": "npm run compile",
+	  "compile": "tsc -p ./",
+	  "watch": "tsc -watch -p ./"
+	},
+	"devDependencies": {
+	  "@types/node": "^10.12.21",
+	  "@types/vscode": "^1.42.0",
+	  "typescript": "^3.5.1",
+	  "tslint": "^5.12.1"
+	}
+  }
