@@ -1,33 +1,52 @@
 {
-	"name": "comfort view",
-	"displayName": "Comfort View",
-	"description": "Comfort view for project structures.",
-	"version": "0.0.1",
-	"publisher": "durzn",
+	"name": "zenview",
+	"displayName": "Zen View",
+	"description": "Zen view for project structures.",
+	"version": "1.0.0",
+	"publisher": "Durzn",
+
+	"readme": "README.md",
+	"license": "SEE LICENSE IN LICENSE",
+	"categories": [
+		"Visualization"
+	],
 	"engines": {
-	  "vscode": "^1.42.0"
+		"vscode": "^1.42.0"
 	},
-	"activationEvents": ["onView:comfortView"],
+	"activationEvents": [
+		"onView:zenView"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
+		"configuration": [
+			{
+				"title": "zenView",
+				"properties": {
+					"zenView.zenPaths": {
+						"type": "array",
+						"default": []
+					}
+				}
+			}
+		],
 	  "views": {
-		"explorer": [
-		  {
-			"id": "comfortView",
-			"name": "Comfort View"
-		  }
-		]
-	  }
+			"explorer": [
+				{
+					"id": "zenView",
+					"name": "Zen View"
+				}
+			]
+		}
 	},
 	"scripts": {
-	  "vscode:prepublish": "npm run compile",
-	  "compile": "tsc -p ./",
-	  "watch": "tsc -watch -p ./"
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./"
 	},
 	"devDependencies": {
-	  "@types/node": "^10.12.21",
-	  "@types/vscode": "^1.42.0",
-	  "typescript": "^3.5.1",
-	  "tslint": "^5.12.1"
+		"@types/node": "^10.12.21",
+		"@types/vscode": "^1.42.0",
+		"typescript": "^3.5.1",
+		"tslint": "^5.12.1"
 	}
-  }
+}

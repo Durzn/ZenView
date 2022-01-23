@@ -1,70 +1,32 @@
-# comfortview README
+# About this Visual Studio Code extension
 
-This is the README for your extension "comfortview". After writing up a brief description, we recommend including the following sections.
+Allows to add files or directories to a custom view to have a quick overview over the important files of a project.
+Files can be opened and (in the future) interacted with, so all uninteresting files can effectively be ignored.
 
-## Features
+# Features
+- Configuration of links to directories and files to gain quick access
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+# Known Issues
+- So far none
 
-For example if there is an image subfolder under your extension project workspace:
+# Release Notes
+For all notes please refer to the changelog.
+# Planned improvements
+- Add option to add files/directories to settings via context menu
+- Add context menu to do trivial filesystem operations (the explorer context menu sadly cannot be used, refer to https://github.com/Microsoft/vscode/issues/48932 for more information.)
 
-\!\[feature X\]\(images/feature-x.png\)
+# Feature requests and bug reports
+Please mail them to me at dev@durzn.com or create an open issue at https://github.com/Durzn/ZenView
+Thanks to everyone reporting issues and requesting new features.
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+# Special thanks
+## You
+for using this extension :)
 
-## Requirements
+# Support
+I'm working on projects like this extension in my free time. 
+If you want to buy me a coffee to keep me awake for more work on my projects, I'd greatly appreciate it.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+<a href="https://www.buymeacoffee.com/Durzn" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 174px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a>
 
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
------------------------------------------------------------------------------------------------------------
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+I also gladly accept ``Ada`` over this address: ``addr1qyz4hp9a5m844c5dn7nz56vget0lcx2lxg9eg02x9nyg82m7306tyvjqygl08grv79tm2jw0sh9lg8nr5u0g0qvf2nlsw376z4``
