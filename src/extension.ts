@@ -1,8 +1,11 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+const { resolve } = require('path');
+const { readdir } = require('fs').promises;
 
 let comfortPaths: Array<vscode.Uri> = [];
+//let comfortPaths: Array<vscode.Uri> = [vscode.Uri.file('F:/Sync/TestProject/Cfg5'), vscode.Uri.file('F:/Sync/TestProject/Implementation')];
 
 export function activate(context: vscode.ExtensionContext) {
   let rootPath: vscode.Uri | undefined = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined;
@@ -24,7 +27,12 @@ export class ComfortViewProvider implements vscode.TreeDataProvider<ComfortViewF
     return element;
   }
 
-  getChildren(element?: ComfortViewFile): Thenable<ComfortViewFile[]> {
+  resolveTreeItem(item: vscode.TreeItem, element: ComfortViewFile, token: vscode.CancellationToken): vscode.ProviderResult<vscode.TreeItem> {
+    item.label = element.label;
+    return item;
+  }
+
+  async getChildren(element?: ComfortViewFile): Promise<ComfortViewFile[]> {
     if (!vscode.workspace) {
       vscode.window.showInformationMessage('This extension only works within workspaces.');
       return Promise.resolve([]);
@@ -33,27 +41,34 @@ export class ComfortViewProvider implements vscode.TreeDataProvider<ComfortViewF
     if (element) {
       return Promise.resolve([]);
     }
-    else {
+    else { /* root */
+      let comfortViewFiles: ComfortViewFile[] = [];
       for (let comfortPath of comfortPaths) {
-        let files: Promise<ComfortViewFile[]> = this.getComfortViewFilesRecursively(comfortPath);
-        return files;
+        comfortViewFiles.push(this.convertFileToComfortFile(comfortPath, FileType.directory));
+        for await (const file of this.getFiles(comfortPath)) {
+          comfortViewFiles.push(file);
+        }
+      }
+      return comfortViewFiles;
+    }
+  }
+
+  private async* getFiles(dir: vscode.Uri): AsyncGenerator<ComfortViewFile> {
+    const dirents = await readdir(dir.fsPath, { withFileTypes: true });
+    for (const dirent of dirents) {
+      const res = resolve(dir.fsPath, dirent.name);
+      if (dirent.isDirectory()) {
+        yield* this.getFiles(vscode.Uri.file(res));
+        yield this.convertFileToComfortFile(vscode.Uri.file(res), FileType.directory);
+      } else {
+        yield this.convertFileToComfortFile(vscode.Uri.file(res), FileType.file);
       }
     }
-    return Promise.resolve([]);
   }
 
-  private getComfortViewFilesRecursively(startUri: vscode.Uri): Promise<ComfortViewFile[]> {
-    return new Promise((resolve, reject) => {
-      fs.readdir(startUri.fsPath, (err, files) => err === null ? resolve(this.convertFilesToComfortFiles(files)) : reject(err));
-    });
-  }
-
-  private convertFilesToComfortFiles(files: string[]) {
-    let comfortViewFiles: ComfortViewFile[] = [];
-    for (let file of files) {
-      comfortViewFiles.push(new ComfortViewFile(vscode.Uri.file(file), vscode.TreeItemCollapsibleState.None));
-    }
-    return comfortViewFiles;
+  private convertFileToComfortFile(file: vscode.Uri, fileType: FileType) {
+    let collapsibleState = fileType === FileType.directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
+    return new ComfortViewFile(file, collapsibleState, fileType);
   }
 }
 
@@ -64,13 +79,15 @@ const themePath = path.join(ext!.extensionPath, ext!.packageJSON.contributes.ico
 class ComfortViewFile extends vscode.TreeItem {
   constructor(
     public readonly fileUri: vscode.Uri,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly fileType: FileType
   ) {
     super(fileUri.path.toString(), collapsibleState);
+    this.fileType = fileType;
   }
-
-  iconPath = {
-    light: themePath,
-    dark: themePath
-  };
 }
+
+enum FileType {
+  file,
+  directory
+};
