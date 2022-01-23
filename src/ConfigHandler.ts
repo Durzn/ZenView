@@ -4,9 +4,6 @@ import { ZenViewUtil } from './ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 import * as path from 'path';
 
-const config = vscode.workspace.getConfiguration();
-const iconTheme = config.workbench.iconTheme;
-
 export class ConfigHandler {
 
     private getConfiguration() {
@@ -40,9 +37,5 @@ export class ConfigHandler {
             zenPaths = [ZenViewUtil.convertFileToZenFile(rootPath, vscode.FileType.Directory)];
         }
         return zenPaths;
-    }
-
-    public getThemePath(): vscode.Uri {
-        return config.workbench.iconTheme;
     }
 }
