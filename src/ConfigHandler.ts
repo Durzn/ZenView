@@ -30,9 +30,10 @@ export class ConfigHandler {
             if (fileExists) {
                 let fileType: vscode.FileType = ZenViewUtil.getFileType(vscode.Uri.file(absPath));
                 zenPaths.push(ZenViewUtil.convertFileToZenFile(vscode.Uri.file(absPath), fileType));
-                continue; /* Make sure only directories are accepted, remove from array in any other case. */
             }
-            zenStrings.splice(i, 1);
+            else {
+                zenStrings.splice(i, 1);
+            }
         }
         /* If no given path is valid, make sure at least the root path is active! */
         if (zenStrings.length === 0) {
