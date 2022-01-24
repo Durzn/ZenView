@@ -1,15 +1,24 @@
 {
 	"name": "zenview",
 	"displayName": "Zen View",
-	"description": "Zen view for project structures.",
+	"description": "Reduce clutter in project structures.",
 	"version": "1.0.0",
 	"publisher": "Durzn",
-
 	"readme": "README.md",
 	"license": "SEE LICENSE IN LICENSE",
 	"categories": [
-		"Visualization"
+		"Other"
 	],
+	"keywords": [
+		"Filter",
+		"Explorer",
+		"View",
+		"Dynamic",
+		"Project"
+	],
+	"repository": {
+		"url": "https://github.com/Durzn/ZenView"
+	},
 	"engines": {
 		"vscode": "^1.42.0"
 	},
