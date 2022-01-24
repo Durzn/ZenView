@@ -6,14 +6,30 @@ Files can be opened and (in the future) interacted with, so all uninteresting fi
 # Features
 - Configuration of links to directories and files to gain quick access
 
+
+# Disclaimer
+Please keep in mind that it is not recommended to manually edit the configuration. Use the context menu in the file explorer instead.
+This extension only works when a workspace was opened and all configured relative paths need to be relative from the workspace root. Absolute paths may be across the entire file system.
+# Usage
+* `zenView.zenPaths`: User defined paths to directories or files which shall be added to the zen view.
+E.g.
+```
+"zenView.zenPaths": [
+    {
+        "./src",
+        "D:/tests",
+        "/home/user/tests"
+    }
+]
+```
 # Known Issues
 - So far none
 
 # Release Notes
 For all notes please refer to the changelog.
 # Planned improvements
-- Add option to add files/directories to settings via context menu
-- Add context menu to do trivial filesystem operations (the explorer context menu sadly cannot be used, refer to https://github.com/Microsoft/vscode/issues/48932 for more information.)
+- Add option to add or remove files/directories to settings via context menu
+- Further features on request
 
 # Feature requests and bug reports
 Please mail them to me at dev@durzn.com or create an open issue at https://github.com/Durzn/ZenView

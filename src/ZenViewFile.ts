@@ -9,7 +9,7 @@ export class ZenViewFile extends vscode.TreeItem {
     ) {
       super(fileName, collapsibleState);
       this.fileType = fileType;
-      this.resourceUri = vscode.Uri.parse(fileUri.fsPath);
+      this.resourceUri = vscode.Uri.parse(fileUri.path);
       if(fileType === vscode.FileType.Directory) {
         this.contextValue = "directory";
         this.iconPath = vscode.ThemeIcon.Folder;

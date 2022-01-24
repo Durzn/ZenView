@@ -2,7 +2,7 @@
 	"name": "zenview",
 	"displayName": "Zen View",
 	"description": "Reduce clutter in project structures.",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"publisher": "Durzn",
 	"readme": "README.md",
 	"license": "SEE LICENSE IN LICENSE",
@@ -38,14 +38,38 @@
 				}
 			}
 		],
-	  "views": {
+		"views": {
 			"explorer": [
 				{
 					"id": "zenView",
 					"name": "Zen View"
 				}
 			]
-		}
+		},
+		"menus": {
+			"explorer/context": [
+				{
+					"command": "zenView.addAbsolutePath",
+					"group": "zenGroup@1",
+					"when": ""
+				},
+				{
+					"command": "zenView.addRelativePath",
+					"group": "zenGroup@1",
+					"when": ""
+				}
+			]
+		},
+		"commands": [
+			{
+				"command": "zenView.addAbsolutePath",
+				"title": "Add absolute path to ZenView configuration."
+			},
+			{
+				"command": "zenView.addRelativePath",
+				"title": "Add relative path to ZenView configuration."
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

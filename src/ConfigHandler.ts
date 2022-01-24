@@ -4,15 +4,42 @@ import { ZenViewUtil } from './ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 import * as path from 'path';
 
+export enum FilePathType {
+    absolute,
+    relative
+};
+
 export class ConfigHandler {
 
-    private getConfiguration() {
+    private static getConfiguration() {
         return vscode.workspace.getConfiguration("zenView", null);
     }
 
-    constructor() { }
+    static addZenPath(rootPath: vscode.Uri, absolutePath: vscode.Uri, filePathType: FilePathType): boolean {
+        const config = this.getConfiguration();
+        let fileExists = fs.existsSync(absolutePath.fsPath);
+        if(fileExists) {
+            /* vscode.Uri.file() works fine for absolute paths, does NOT work for relative paths (see https://github.com/microsoft/vscode/issues/34449).
+            Cannot be used here. */
+            let fileString: string = absolutePath.fsPath;
+            if(filePathType === FilePathType.relative) {
+                fileString = "./" + path.relative(rootPath.fsPath, absolutePath.fsPath);
+            }
+            let currentPaths: string[] | undefined = config.get("zenPaths");
+            if(currentPaths === undefined) {
+                currentPaths = [];
+            }
+            if(!currentPaths.includes(fileString))
+            {
+                currentPaths.push(fileString);
+                config.update("zenPaths", currentPaths);
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public getZenPaths(rootPath: vscode.Uri): ZenViewFile[] {
+    static getZenPaths(rootPath: vscode.Uri): ZenViewFile[] {
         const config = this.getConfiguration();
         let zenStrings: string[] | undefined = config.get("zenPaths");
         let zenPaths: ZenViewFile[] = [];
