@@ -6,10 +6,12 @@ All notable changes to the "zenview" extension will be documented in this file.
 ### Added
 - new configuration parameter: resolveSymlinks
 - new configuration parameter: foldersTop
+- Zen view items can now be renamed
 
 ### Changed
 - Symlinks are now properly resolved in zen view
 - Folders can now be listed before files
+- `zenView.zenPaths` is now a {Path, Name} tuple.
 
 ## [1.1.0] - 2022-01-24
 ### Added

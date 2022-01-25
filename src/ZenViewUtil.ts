@@ -3,9 +3,9 @@ import { ZenViewFile } from './ZenViewFile';
 
 export class ZenViewUtil {
 
-    static getFileName(fileUri: vscode.Uri): string {
+    static getFileName(path: string): string {
         let returnString: string | undefined;
-        returnString = fileUri.path.split('\\').pop();
+        returnString = path.split('\\').pop();
         if (!returnString) {
             return "";
         }
@@ -16,9 +16,9 @@ export class ZenViewUtil {
         return returnString;
     }
 
-    static convertFileToZenFile(fileUri: vscode.Uri, fileType: vscode.FileType) {
+    static convertFileToZenFile(fileUri: vscode.Uri, fileType: vscode.FileType, fileName : string | undefined = this.getFileName(fileUri.path)) {
         let collapsibleState = fileType === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
-        return new ZenViewFile(fileUri, collapsibleState, fileType, this.getFileName(fileUri));
+        return new ZenViewFile(fileUri, collapsibleState, fileType, fileName);
     }
 
     static getFileType(fileUri: vscode.Uri, statSyncFunc: any): vscode.FileType {

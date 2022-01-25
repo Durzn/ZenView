@@ -32,14 +32,17 @@
 				"title": "zenView",
 				"properties": {
 					"zenView.zenPaths": {
+						"description": "{Path, Name} objects, which reference a given path and lists them with the given name in the zen view. Advised not to set by hand, but by the context menu.",
 						"type": "array",
 						"default": []
 					},
 					"zenView.resolveSymlinks": {
+						"description": "True (default): Resolves found symlinks to directories or files instead of symlinks. False: Does not resolve the symlink.",
 						"type": "boolean",
 						"default": true
 					},
 					"zenView.foldersTop": {
+						"description": "True (default): Places directories before files. False: Places entries as found on the filesystem.",
 						"type": "boolean",
 						"default": true
 					}

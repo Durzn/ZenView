@@ -12,13 +12,22 @@ Please keep in mind that it is not recommended to manually edit the configuratio
 This extension only works when a workspace was opened and all configured relative paths need to be relative from the workspace root. Absolute paths may be across the entire file system.
 # Usage
 * `zenView.zenPaths`: User defined paths to directories or files which shall be added to the zen view.
+* `zenView.foldersTop`: True (default): Places directories before files. False: Places entries as found on the filesystem.
+* `zenView.resolveSymlinks`: True (default): Resolves found symlinks to directories or files instead of symlinks. False: Does not resolve the symlink.
 E.g.
 ```
 "zenView.zenPaths": [
     {
-        "./src",
-        "D:/tests",
-        "/home/user/tests"
+        "name": "Src",
+        "path": "./src"
+    },
+    {
+        "name": "Tests",
+        "path": "D:/tests"
+    },
+    {
+        "name": "Tests",
+        "path": "/home/user/tests"
     }
 ]
 ```

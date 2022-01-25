@@ -30,17 +30,19 @@ export class ConfigHandler {
         if(fileExists) {
             /* vscode.Uri.file() works fine for absolute paths, does NOT work for relative paths (see https://github.com/microsoft/vscode/issues/34449).
             Cannot be used here. */
-            let fileString: string = absolutePath.fsPath;
+            let pathString: string = absolutePath.fsPath;
             if(filePathType === FilePathType.relative) {
-                fileString = "./" + path.relative(rootPath.fsPath, absolutePath.fsPath);
+                pathString = "./" + path.relative(rootPath.fsPath, absolutePath.fsPath);
             }
-            let currentPaths: string[] | undefined = config.get("zenPaths");
+            let currentPaths: any = config.get("zenPaths");
             if(currentPaths === undefined) {
-                currentPaths = [];
+                currentPaths = [{}];
             }
-            if(!currentPaths.includes(fileString))
+            if(currentPaths.filter((e: any) => e.path === pathString).length <= 0)
             {
-                currentPaths.push(fileString);
+                let fileName = ZenViewUtil.getFileName(pathString);
+                let jsonObj = {"name": fileName, "path": pathString};
+                currentPaths.push(jsonObj);
                 config.update("zenPaths", currentPaths);
                 return true;
             }
@@ -62,28 +64,26 @@ export class ConfigHandler {
 
     static getZenPaths(rootPath: vscode.Uri): ZenViewFile[] {
         const config = this.getConfiguration();
-        let zenStrings: string[] | undefined = config.get("zenPaths");
-        let zenPaths: ZenViewFile[] = [];
-        if (zenStrings === undefined) {
-            zenStrings = [rootPath.fsPath];
+        let zenTuples: any = config.get("zenPaths");
+        let zenFiles: ZenViewFile[] = [];
+        if (zenTuples === undefined) {
+            zenTuples = [[rootPath.fsPath, rootPath.fsPath]];
         }
 
-        /* Check validity of configured paths */
-        for (let i = 0; i < zenStrings.length; i++) {
-            let absPath = path.resolve(rootPath.fsPath, zenStrings[i]);
-            let fileExists = fs.existsSync(absPath);
-            if (fileExists) {
-                let fileType: vscode.FileType = ZenViewUtil.getFileType(vscode.Uri.file(absPath), ConfigHandler.getUsedStatFunction());
-                zenPaths.push(ZenViewUtil.convertFileToZenFile(vscode.Uri.file(absPath), fileType));
-            }
-            else {
-                zenStrings.splice(i, 1);
+        for(let zenTuple of zenTuples) {
+            if(zenTuple.hasOwnProperty("name") && zenTuple.hasOwnProperty("path")) {
+                let absPath = path.resolve(rootPath.fsPath, zenTuple.path);
+                let fileExists = fs.existsSync(absPath);
+                if (fileExists) {
+                    let fileType: vscode.FileType = ZenViewUtil.getFileType(vscode.Uri.file(absPath), ConfigHandler.getUsedStatFunction());
+                    zenFiles.push(ZenViewUtil.convertFileToZenFile(vscode.Uri.file(absPath), fileType, zenTuple.name));
+                }
             }
         }
         /* If no given path is valid, make sure at least the root path is active! */
-        if (zenStrings.length === 0) {
-            zenPaths = [ZenViewUtil.convertFileToZenFile(rootPath, vscode.FileType.Directory)];
+        if (zenFiles.length === 0) {
+            zenFiles = [ZenViewUtil.convertFileToZenFile(rootPath, vscode.FileType.Directory)];
         }
-        return zenPaths;
+        return zenFiles;
     }
 }
