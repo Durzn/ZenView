@@ -15,6 +15,15 @@ export class ConfigHandler {
         return vscode.workspace.getConfiguration("zenView", null);
     }
 
+    static listFoldersFirst() {
+        const config = this.getConfiguration();
+        let foldersTop: boolean | undefined = config.get("foldersTop");
+        if(foldersTop === undefined) {
+            foldersTop = true;
+        }
+        return foldersTop;    
+    }
+
     static addZenPath(rootPath: vscode.Uri, absolutePath: vscode.Uri, filePathType: FilePathType): boolean {
         const config = this.getConfiguration();
         let fileExists = fs.existsSync(absolutePath.fsPath);

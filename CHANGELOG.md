@@ -5,9 +5,11 @@ All notable changes to the "zenview" extension will be documented in this file.
 ## [1.2.0] - 2022-01-25
 ### Added
 - new configuration parameter: resolveSymlinks
+- new configuration parameter: foldersTop
 
 ### Changed
 - Symlinks are now properly resolved in zen view
+- Folders can now be listed before files
 
 ## [1.1.0] - 2022-01-24
 ### Added

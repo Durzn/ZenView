@@ -38,6 +38,10 @@
 					"zenView.resolveSymlinks": {
 						"type": "boolean",
 						"default": true
+					},
+					"zenView.foldersTop": {
+						"type": "boolean",
+						"default": true
 					}
 				}
 			}
