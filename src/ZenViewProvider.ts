@@ -4,6 +4,7 @@ import { zenViewGlobals } from './ZenViewGlobals';
 import { ZenViewUtil } from './ZenViewUtil';
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
+import { ConfigHandler } from './ConfigHandler';
 
 export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
@@ -49,7 +50,7 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
       for (const dirent of dirents) {
         const res = resolve(dir.fsPath, dirent.name);
         let resUri = vscode.Uri.file(res);
-        let fileType = ZenViewUtil.getFileType(resUri);
+        let fileType = ZenViewUtil.getFileType(resUri, ConfigHandler.getUsedStatFunction());
         if (dirent.isDirectory()) {
           yield ZenViewUtil.convertFileToZenFile(resUri, fileType);
         } else {

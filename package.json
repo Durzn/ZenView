@@ -2,7 +2,7 @@
 	"name": "zenview",
 	"displayName": "Zen View",
 	"description": "Reduce clutter in project structures.",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"publisher": "Durzn",
 	"readme": "README.md",
 	"license": "SEE LICENSE IN LICENSE",
@@ -34,6 +34,10 @@
 					"zenView.zenPaths": {
 						"type": "array",
 						"default": []
+					},
+					"zenView.resolveSymlinks": {
+						"type": "boolean",
+						"default": true
 					}
 				}
 			}

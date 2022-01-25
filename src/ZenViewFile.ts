@@ -14,7 +14,7 @@ export class ZenViewFile extends vscode.TreeItem {
         this.contextValue = "directory";
         this.iconPath = vscode.ThemeIcon.Folder;
       }
-      else {
+      else if(fileType === vscode.FileType.File) {
         this.contextValue = "file";
         this.iconPath = vscode.ThemeIcon.File;
         this.command = {
@@ -23,6 +23,9 @@ export class ZenViewFile extends vscode.TreeItem {
           'tooltip': "Open file",
           'arguments': [this.fileUri]
         };
+      }
+      else if(fileType === vscode.FileType.SymbolicLink) {
+        this.contextValue = "symbolicLink";
       }
     }
   }

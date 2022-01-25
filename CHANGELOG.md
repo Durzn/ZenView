@@ -2,6 +2,13 @@
 
 All notable changes to the "zenview" extension will be documented in this file.
 
+## [1.2.0] - 2022-01-25
+### Added
+- new configuration parameter: resolveSymlinks
+
+### Changed
+- Symlinks are now properly resolved in zen view
+
 ## [1.1.0] - 2022-01-24
 ### Added
 - Context menu in file explorer to add paths as absolute or relative path

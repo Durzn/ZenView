@@ -39,6 +39,18 @@ export class ConfigHandler {
         return false;
     }
 
+    static getUsedStatFunction() {
+        const config = this.getConfiguration();
+        let resolveSymlinks: boolean | undefined = config.get("resolveSymlinks");
+        if(resolveSymlinks === undefined) {
+            resolveSymlinks = true;
+        }
+        if(resolveSymlinks) {
+            return fs.statSync;
+        }
+        return fs.lstatSync;
+    }
+
     static getZenPaths(rootPath: vscode.Uri): ZenViewFile[] {
         const config = this.getConfiguration();
         let zenStrings: string[] | undefined = config.get("zenPaths");
@@ -52,7 +64,7 @@ export class ConfigHandler {
             let absPath = path.resolve(rootPath.fsPath, zenStrings[i]);
             let fileExists = fs.existsSync(absPath);
             if (fileExists) {
-                let fileType: vscode.FileType = ZenViewUtil.getFileType(vscode.Uri.file(absPath));
+                let fileType: vscode.FileType = ZenViewUtil.getFileType(vscode.Uri.file(absPath), ConfigHandler.getUsedStatFunction());
                 zenPaths.push(ZenViewUtil.convertFileToZenFile(vscode.Uri.file(absPath), fileType));
             }
             else {
