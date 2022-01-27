@@ -5,7 +5,7 @@ import { ZenViewUtil } from './ZenViewUtil';
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 import { ConfigHandler } from './ConfigHandler';
-import { ZenViewFileSorterFolderFirst } from './ZenViewSorter';
+import { ZenViewAlphabeticalSorter, ZenViewFileSorterFolderFirst } from './ZenViewSorter';
 
 export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
@@ -39,9 +39,11 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
       for await (const file of this.getFiles(element.fileUri)) {
         zenViewFiles.push(file);
       }
+      let alphabeticalSorter = new ZenViewAlphabeticalSorter();
+      zenViewFiles = alphabeticalSorter.sort(zenViewFiles);
       if (ConfigHandler.listFoldersFirst()) {
-        let sorter = new ZenViewFileSorterFolderFirst();
-        zenViewFiles = sorter.sort(zenViewFiles);
+        let letfolderFirstSorter = new ZenViewFileSorterFolderFirst();
+        zenViewFiles = letfolderFirstSorter.sort(zenViewFiles);
       }
       return zenViewFiles;
     }
