@@ -1,5 +1,10 @@
 import * as vscode from 'vscode';
 
+export enum FileContextValue {
+  file = "file",
+  directory = "directory"
+};
+
 export class ZenViewFile extends vscode.TreeItem {
     constructor(
       public readonly fileUri: vscode.Uri,
@@ -11,11 +16,11 @@ export class ZenViewFile extends vscode.TreeItem {
       this.fileType = fileType;
       this.resourceUri = vscode.Uri.parse(fileUri.path);
       if(fileType === vscode.FileType.Directory) {
-        this.contextValue = "directory";
+        this.contextValue = FileContextValue.directory;
         this.iconPath = vscode.ThemeIcon.Folder;
       }
       else if(fileType === vscode.FileType.File) {
-        this.contextValue = "file";
+        this.contextValue = FileContextValue.file;
         this.iconPath = vscode.ThemeIcon.File;
         this.command = {
           'title': "Open file",
