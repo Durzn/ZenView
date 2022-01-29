@@ -25,7 +25,7 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
         if (configuredFiles.find((zenFile: ZenViewFile) => {
           let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
           let filePath = zenViewUtil.getAbsolutePath(file.oldUri.fsPath);
-          return zenFilePath === filePath; 
+          return zenFilePath === filePath;
         })) {
           let absoluteOldPath = zenViewUtil.getAbsolutePath(file.oldUri.fsPath);
           let absoluteNewPath = zenViewUtil.getAbsolutePath(file.newUri.fsPath);
@@ -46,8 +46,25 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
     });
 
     vscode.workspace.onDidDeleteFiles((e) => {
+      let configuredFiles = ConfigHandler.getZenPaths(this.rootPath);
       for (let file of e.files) {
-
+        if (configuredFiles.find((zenFile: ZenViewFile) => {
+          let filePath = zenViewUtil.getAbsolutePath(file.fsPath);
+          let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
+          return zenFilePath === filePath;
+        })) {
+          let absolutePath = zenViewUtil.getAbsolutePath(file.fsPath);
+          ConfigHandler.removeZenPath(this.rootPath, absolutePath).then((result) => {
+            if (!result) {
+              let relativePath = zenViewUtil.getRelativePath(file.fsPath);
+              ConfigHandler.removeZenPath(this.rootPath, relativePath).then((result) => {
+                if (!result) {
+                  console.log("Error while handling file delete event.");
+                }
+              });
+            }
+          });
+        }
       }
       this.refresh();
     });

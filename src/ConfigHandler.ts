@@ -47,7 +47,29 @@ export class ConfigHandler {
         return fileFound;
     }
 
-    static async addZenPath(rootPath: vscode.Uri, path: string): Promise<boolean> {
+    static async removeZenPath(rootPath: string, keyPath: string): Promise<boolean> {
+        let config = this.getConfiguration();
+        let configuredZenPaths = this.getZenPaths(rootPath);
+        let jsonObjects: any[] | undefined = [];
+        let fileFound: boolean = false;
+        for (let zenPath of configuredZenPaths) {
+            let jsonObject: { name: string, path: string } = { name: zenPath.fileName, path: zenPath.fileUri };
+            if (zenPath.fileUri === keyPath) {
+                fileFound = true;
+                continue;
+            }
+            jsonObjects.push(jsonObject);
+        }
+        if (fileFound) {
+            if(jsonObjects.length === 0) {
+                jsonObjects = undefined; /* If no objects exist, parameter value must be undefined to delete it. */
+            }
+            await config.update("zenPaths", jsonObjects);
+        }
+        return fileFound;
+    }
+
+    static async addZenPath(path: string): Promise<boolean> {
         const config = this.getConfiguration();
         let fileExists = fs.existsSync(zenViewUtil.getAbsolutePath(path));
         if (fileExists) {
