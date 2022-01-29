@@ -99,6 +99,7 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
   readonly onDidChangeTreeData: vscode.Event<ZenViewFile | undefined | null | void> = this._onDidChangeTreeData.event;
 
   refresh(): void {
+    zenViewGlobals.onConfigChange();
     this._onDidChangeTreeData.fire();
   }
 
