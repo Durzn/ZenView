@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { ZenViewProvider } from './ZenViewProvider';
 import { zenViewGlobals } from './ZenViewGlobals';
 import { ConfigHandler, FilePathType } from './ConfigHandler';
+import { zenViewUtil } from './ZenViewUtil';
 
 const zenViewProvider = new ZenViewProvider();
 
@@ -13,14 +14,14 @@ export function activate(context: vscode.ExtensionContext) {
   }
   vscode.window.registerTreeDataProvider('zenView', zenViewProvider);
   vscode.commands.registerCommand('zenView.open', (fileUri) => {
-    vscode.commands.executeCommand('vscode.open', fileUri);
+    vscode.commands.executeCommand('vscode.open', vscode.Uri.file(zenViewUtil.getAbsolutePath(fileUri)));
   });
   vscode.commands.registerCommand('zenView.addRelativePath', (fileUri: vscode.Uri) => {
-    ConfigHandler.addZenPath(rootPath!, fileUri, FilePathType.relative);
+    ConfigHandler.addZenPath(rootPath!, zenViewUtil.getRelativePath(fileUri.fsPath));
     onConfigChange();
   });
   vscode.commands.registerCommand('zenView.addAbsolutePath', (fileUri: vscode.Uri) => {
-    ConfigHandler.addZenPath(rootPath!, fileUri, FilePathType.absolute);
+    ConfigHandler.addZenPath(rootPath!, zenViewUtil.getAbsolutePath(fileUri.fsPath));
     onConfigChange();
   });
   vscode.workspace.onDidChangeConfiguration(() => {

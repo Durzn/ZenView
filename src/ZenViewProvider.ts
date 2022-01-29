@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { ZenViewFile } from './ZenViewFile';
 import { zenViewGlobals } from './ZenViewGlobals';
-import { ZenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './ZenViewUtil';
 const { resolve } = require('path');
 const { readdir } = require('fs').promises;
 import { ConfigHandler } from './ConfigHandler';
@@ -9,17 +9,46 @@ import { ZenViewAlphabeticalSorter, ZenViewFileSorterFolderFirst } from './ZenVi
 
 export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
-  constructor() {
+  public readonly rootPath: string;
 
-    vscode.workspace.onDidCreateFiles(() => {
+  constructor(
+  ) {
+    this.rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : "";
+
+    vscode.workspace.onDidCreateFiles((e) => {
       this.refresh();
     });
 
-    vscode.workspace.onDidRenameFiles(() => {
+    vscode.workspace.onDidRenameFiles((e) => {
+      let configuredFiles = ConfigHandler.getZenPaths(this.rootPath);
+      for (let file of e.files) {
+        if (configuredFiles.find((zenFile: ZenViewFile) => {
+          let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
+          let filePath = zenViewUtil.getAbsolutePath(file.oldUri.fsPath);
+          return zenFilePath === filePath; 
+        })) {
+          let absoluteOldPath = zenViewUtil.getAbsolutePath(file.oldUri.fsPath);
+          let absoluteNewPath = zenViewUtil.getAbsolutePath(file.newUri.fsPath);
+          ConfigHandler.replaceZenPath(this.rootPath, absoluteOldPath, absoluteNewPath).then((result) => {
+            if (!result) {
+              let relativeOldPath = zenViewUtil.getRelativePath(file.oldUri.fsPath);
+              let relativeNewPath = zenViewUtil.getRelativePath(file.newUri.fsPath);
+              ConfigHandler.replaceZenPath(this.rootPath, relativeOldPath, relativeNewPath).then((result) => {
+                if (!result) {
+                  console.log("Error while handling file rename event.");
+                }
+              });
+            }
+          });
+        }
+      }
       this.refresh();
     });
 
-    vscode.workspace.onDidDeleteFiles(() => {
+    vscode.workspace.onDidDeleteFiles((e) => {
+      for (let file of e.files) {
+
+      }
       this.refresh();
     });
   }
@@ -36,7 +65,7 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
     if (element) {
       let zenViewFiles: ZenViewFile[] = [];
-      for await (const file of this.getFiles(element.fileUri)) {
+      for await (const file of this.getFiles(vscode.Uri.file(element.fileUri))) {
         zenViewFiles.push(file);
       }
       let alphabeticalSorter = new ZenViewAlphabeticalSorter();
@@ -57,11 +86,11 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
     for (const dirent of dirents) {
       const res = resolve(dir.fsPath, dirent.name);
       let resUri = vscode.Uri.file(res);
-      let fileType = ZenViewUtil.getFileType(resUri, ConfigHandler.getUsedStatFunction());
+      let fileType = zenViewUtil.getFileType(resUri, ConfigHandler.getUsedStatFunction());
       if (dirent.isDirectory()) {
-        yield ZenViewUtil.convertFileToZenFile(resUri, fileType);
+        yield zenViewUtil.convertFileToZenFile(resUri.fsPath, fileType);
       } else {
-        yield ZenViewUtil.convertFileToZenFile(resUri, fileType);
+        yield zenViewUtil.convertFileToZenFile(resUri.fsPath, fileType);
       }
     }
   }

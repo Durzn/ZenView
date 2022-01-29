@@ -12,7 +12,7 @@ export class ZenViewGlobals {
     }
 
     public onConfigChange() {
-        this.zenPaths = ConfigHandler.getZenPaths(this.rootPath!);
+        this.zenPaths = ConfigHandler.getExistingZenPaths(this.rootPath!.fsPath);
     }
 }
 

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { zenViewUtil } from './ZenViewUtil';
 
 export enum FileContextValue {
   file = "file",
@@ -7,14 +8,14 @@ export enum FileContextValue {
 
 export class ZenViewFile extends vscode.TreeItem {
     constructor(
-      public readonly fileUri: vscode.Uri,
+      public readonly fileUri: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly fileType: vscode.FileType,
       public readonly fileName: string
     ) {
       super(fileName, collapsibleState);
       this.fileType = fileType;
-      this.resourceUri = vscode.Uri.parse(fileUri.path);
+      this.resourceUri = vscode.Uri.parse(vscode.Uri.file(zenViewUtil.getAbsolutePath(fileUri)).path);
       if(fileType === vscode.FileType.Directory) {
         this.contextValue = FileContextValue.directory;
         this.iconPath = vscode.ThemeIcon.Folder;
