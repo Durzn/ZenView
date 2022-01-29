@@ -17,11 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('vscode.open', vscode.Uri.file(zenViewUtil.getAbsolutePath(fileUri)));
   });
   vscode.commands.registerCommand('zenView.addRelativePath', (fileUri: vscode.Uri) => {
-    ConfigHandler.addZenPath(rootPath!, zenViewUtil.getRelativePath(fileUri.fsPath));
+    ConfigHandler.addZenPath(zenViewUtil.getRelativePath(fileUri.fsPath));
     onConfigChange();
   });
   vscode.commands.registerCommand('zenView.addAbsolutePath', (fileUri: vscode.Uri) => {
-    ConfigHandler.addZenPath(rootPath!, zenViewUtil.getAbsolutePath(fileUri.fsPath));
+    ConfigHandler.addZenPath(zenViewUtil.getAbsolutePath(fileUri.fsPath));
     onConfigChange();
   });
   vscode.workspace.onDidChangeConfiguration(() => {
