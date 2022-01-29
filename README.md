@@ -8,12 +8,14 @@ Files can be opened and (in the future) interacted with, so all uninteresting fi
 
 
 # Disclaimer
-Please keep in mind that it is not recommended to manually edit the configuration. Use the context menu in the file explorer instead.
-This extension only works when a workspace was opened and all configured relative paths need to be relative from the workspace root. Absolute paths may be across the entire file system.
+Use the context menu in the file explorer to add relative or absolute paths to the configuration.  
+Manually editing the configuration should mainly be done to give paths custom names or remove unwanted/obsolete entries.  
+This extension only works when a workspace was opened and all configured relative paths need to be relative from the workspace root.  
+Absolute paths may be across the entire file system.
 # Usage
-* `zenView.zenPaths`: User defined paths to directories or files which shall be added to the zen view.
 * `zenView.foldersTop`: True (default): Places directories before files. False: Places entries as found on the filesystem.
 * `zenView.resolveSymlinks`: True (default): Resolves found symlinks to directories or files instead of symlinks. False: Does not resolve the symlink.
+* `zenView.zenPaths`: User defined paths to directories or files which shall be added to the zen view.
 E.g.
 ```
 "zenView.zenPaths": [
@@ -37,7 +39,7 @@ E.g.
 # Release Notes
 For all notes please refer to the changelog.
 # Planned improvements
-- Add option to add or remove files/directories to settings via context menu
+- Add option to add or remove files/directories to settings via context menu in the zen view
 - Further features on request
 
 # Feature requests and bug reports

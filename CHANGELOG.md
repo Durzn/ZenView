@@ -2,6 +2,12 @@
 
 All notable changes to the "zenview" extension will be documented in this file.
 
+## [1.3.0] - 2022-01-29
+### Added
+- Configured paths will now be updated in configuration if the files are renamed or deleted.
+NOTE: If a parent directory is renamed, the configured paths are no longer valid and will not be shown in the file tree anymore. Not the whole folder structure is scanned, only the pinned files are checked.
+This means that these invalid paths can remain in the configuration, but will no longer be shown in the file view.
+
 ## [1.2.0] - 2022-01-25
 ### Added
 - new configuration parameter: resolveSymlinks
