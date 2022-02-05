@@ -2,10 +2,10 @@ import * as vscode from 'vscode';
 import { ZenViewFile } from './ZenViewFile';
 import { zenViewGlobals } from './ZenViewGlobals';
 import { zenViewUtil } from './ZenViewUtil';
-const { resolve } = require('path');
-const { readdir } = require('fs').promises;
 import { ConfigHandler } from './ConfigHandler';
 import { ZenViewAlphabeticalSorter, ZenViewFileSorterFolderFirst } from './ZenViewSorter';
+const { readdir } = require('fs').promises;
+const { resolve } = require('path');
 
 export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
@@ -20,58 +20,74 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
     });
 
     vscode.workspace.onDidRenameFiles((e) => {
-      let configuredFiles = ConfigHandler.getZenPaths(this.rootPath);
-      for (let file of e.files) {
-        if (configuredFiles.find((zenFile: ZenViewFile) => {
-          let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
-          let filePath = zenViewUtil.getAbsolutePath(file.oldUri.fsPath);
-          return zenFilePath === filePath;
-        })) {
-          let absoluteOldPath = zenViewUtil.getAbsolutePath(file.oldUri.fsPath);
-          let absoluteNewPath = zenViewUtil.getAbsolutePath(file.newUri.fsPath);
-          ConfigHandler.replaceZenPath(this.rootPath, absoluteOldPath, absoluteNewPath).then((result) => {
-            if (!result) {
-              let relativeOldPath = zenViewUtil.getRelativePath(file.oldUri.fsPath);
-              let relativeNewPath = zenViewUtil.getRelativePath(file.newUri.fsPath);
-              ConfigHandler.replaceZenPath(this.rootPath, relativeOldPath, relativeNewPath).then((result) => {
-                if (!result) {
-                  console.log("Error while handling file rename event.");
-                }
-              });
-            }
-          });
-        }
-      }
+      this.onRenameEvent(e);
       this.refresh();
     });
 
     vscode.workspace.onDidDeleteFiles((e) => {
-      let configuredFiles = ConfigHandler.getZenPaths(this.rootPath);
-      for (let file of e.files) {
-        if (configuredFiles.find((zenFile: ZenViewFile) => {
-          let filePath = zenViewUtil.getAbsolutePath(file.fsPath);
-          let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
-          return zenFilePath === filePath;
-        })) {
-          let absolutePath = zenViewUtil.getAbsolutePath(file.fsPath);
-          ConfigHandler.removeZenPath(this.rootPath, absolutePath).then((result) => {
-            if (!result) {
-              let relativePath = zenViewUtil.getRelativePath(file.fsPath);
-              ConfigHandler.removeZenPath(this.rootPath, relativePath).then((result) => {
-                if (!result) {
-                  console.log("Error while handling file delete event.");
-                }
-              });
-            }
-          });
-        }
-      }
+      this.onDeleteEvent(e);
       this.refresh();
     });
   }
 
   getTreeItem(element: ZenViewFile): vscode.TreeItem {
     return element;
+  }
+
+  public onFileRename(oldUri: vscode.Uri, newUri: vscode.Uri): void {
+    let configuredFiles = ConfigHandler.getZenPaths(this.rootPath);
+    if (configuredFiles.find((zenFile: ZenViewFile) => {
+      let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
+      let filePath = zenViewUtil.getAbsolutePath(oldUri.fsPath);
+      return zenFilePath === filePath;
+    })) {
+      let absoluteOldPath = zenViewUtil.getAbsolutePath(oldUri.fsPath);
+      let absoluteNewPath = zenViewUtil.getAbsolutePath(newUri.fsPath);
+      ConfigHandler.replaceZenPath(this.rootPath, absoluteOldPath, absoluteNewPath).then((result) => {
+        if (!result) {
+          let relativeOldPath = zenViewUtil.getRelativePath(oldUri.fsPath);
+          let relativeNewPath = zenViewUtil.getRelativePath(newUri.fsPath);
+          ConfigHandler.replaceZenPath(this.rootPath, relativeOldPath, relativeNewPath).then((result) => {
+            if (!result) {
+              console.log("Error while handling file rename event.");
+            }
+          });
+        }
+      });
+    }
+  }
+
+  public onFileDelete(fileUri: vscode.Uri): void {
+    let configuredFiles = ConfigHandler.getZenPaths(this.rootPath);
+    if (configuredFiles.find((zenFile: ZenViewFile) => {
+      let filePath = zenViewUtil.getAbsolutePath(fileUri.fsPath);
+      let zenFilePath = zenViewUtil.getAbsolutePath(zenFile.fileUri);
+      return zenFilePath === filePath;
+    })) {
+      let absolutePath = zenViewUtil.getAbsolutePath(fileUri.fsPath);
+      ConfigHandler.removeZenPath(this.rootPath, absolutePath).then((result) => {
+        if (!result) {
+          let relativePath = zenViewUtil.getRelativePath(fileUri.fsPath);
+          ConfigHandler.removeZenPath(this.rootPath, relativePath).then((result) => {
+            if (!result) {
+              console.log("Error while handling file delete event.");
+            }
+          });
+        }
+      });
+    }
+  }
+
+  public onRenameEvent(e: vscode.FileRenameEvent) {
+    for (let file of e.files) {
+      this.onFileRename(file.oldUri, file.newUri);
+    }
+  }
+
+  public onDeleteEvent(e: vscode.FileDeleteEvent) {
+    for (let file of e.files) {
+      this.onFileDelete(file);
+    }
   }
 
   async getChildren(element?: ZenViewFile): Promise<ZenViewFile[]> {

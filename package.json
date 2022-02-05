@@ -58,6 +58,28 @@
 			]
 		},
 		"menus": {
+			"view/item/context": [
+				{
+					"command": "zenView.addDirectory",
+					"when": "view == zenView && viewItem == 'directory'",
+					"group": "zenGroup@1"
+				},
+				{
+					"command": "zenView.addFile",
+					"when": "view == zenView && viewItem == 'directory'",
+					"group": "zenGroup@1"
+				},
+				{
+					"command": "zenView.rename",
+					"when": "view == zenView",
+					"group": "zenGroup@1"
+				},
+				{
+					"command": "zenView.delete",
+					"when": "view == zenView",
+					"group": "zenGroup@2"
+				}
+			],
 			"explorer/context": [
 				{
 					"command": "zenView.addAbsolutePath",
@@ -79,6 +101,22 @@
 			{
 				"command": "zenView.addRelativePath",
 				"title": "Add relative path to ZenView configuration."
+			},
+			{
+				"command": "zenView.addDirectory",
+				"title": "New folder"
+			},
+			{
+				"command": "zenView.addFile",
+				"title": "New file"
+			},
+			{
+				"command": "zenView.rename",
+				"title": "Rename"
+			},
+			{
+				"command": "zenView.delete",
+				"title": "Delete"
 			}
 		]
 	},
