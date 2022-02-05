@@ -1,6 +1,9 @@
 # Change Log
 
 All notable changes to the "zenview" extension will be documented in this file.
+## [1.4.0] - 2022-02-06
+### Added
+- Context menu for entries in the zen view (add file/folder, rename and delete)
 
 ## [1.3.0] - 2022-01-29
 ### Added

@@ -1,7 +1,7 @@
 # About this Visual Studio Code extension
 
 Allows to add files or directories to a custom view to have a quick overview over the important files of a project.
-Files can be opened and (in the future) interacted with, so all uninteresting files can effectively be ignored.
+Files can be opened and interacted with, so all uninteresting files can effectively be ignored and the explorer only needs to be used for more complex use cases.
 
 # Features
 - Configuration of links to directories and files to gain quick access
@@ -39,8 +39,7 @@ E.g.
 # Release Notes
 For all notes please refer to the changelog.
 # Planned improvements
-- Add option to add or remove files/directories to settings via context menu in the zen view
-- Further features on request
+- Nothing planned for now, feature requests are welcome.
 
 # Feature requests and bug reports
 Please mail them to me at dev@durzn.com or create an open issue at https://github.com/Durzn/ZenView
