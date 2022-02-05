@@ -47,6 +47,8 @@ Please mail them to me at dev@durzn.com or create an open issue at https://githu
 Thanks to everyone reporting issues and requesting new features.
 
 # Special thanks
+## Art_of_bini 
+for the great extension icon. See more from her on her instagram page https://www.instagram.com/art_of_bini/
 ## You
 for using this extension :)
 
