@@ -1,6 +1,13 @@
 # Change Log
 
 All notable changes to the "zenview" extension will be documented in this file.
+## [1.5.0] - 2022-02-07
+### Added
+- Added regular expressions to configuration
+- Added command to add configured regular expressions to the zen view configuration
+- Added configuration parameter to disable warning when applying regular expressions to the config
+- Added meatball menu (can be used to apply regular expressions for now)
+
 ## [1.4.0] - 2022-02-06
 ### Added
 - Context menu for entries in the zen view (add file/folder, rename and delete)
