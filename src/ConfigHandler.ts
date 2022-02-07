@@ -1,13 +1,18 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { ZenViewUtil, zenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
-import * as path from 'path';
 
 export enum FilePathType {
     absolute,
     relative
 };
+
+export class ZenRegex {
+    constructor(public readonly regex: RegExp) {
+
+    }
+}
 
 export class ConfigHandler {
 
@@ -61,7 +66,7 @@ export class ConfigHandler {
             jsonObjects.push(jsonObject);
         }
         if (fileFound) {
-            if(jsonObjects.length === 0) {
+            if (jsonObjects.length === 0) {
                 jsonObjects = undefined; /* If no objects exist, parameter value must be undefined to delete it. */
             }
             await config.update("zenPaths", jsonObjects);
@@ -69,7 +74,7 @@ export class ConfigHandler {
         return fileFound;
     }
 
-    static async addZenPath(path: string): Promise<boolean> {
+    static async addZenPath(path: string, filePathType: FilePathType): Promise<boolean> {
         const config = this.getConfiguration();
         let fileExists = fs.existsSync(zenViewUtil.getAbsolutePath(path));
         if (fileExists) {
@@ -78,7 +83,11 @@ export class ConfigHandler {
                 currentPaths = [];
             }
             let absolutePath = zenViewUtil.getAbsolutePath(path);
-            let relativePath = zenViewUtil.getRelativePath(path);
+            let relativePath = path;
+            if (filePathType === FilePathType.absolute) {
+                /* Only do this action on absolute paths, otherwise the path is completely wrong. */
+                relativePath = zenViewUtil.getRelativePath(path);
+            }
             if (currentPaths.filter((e: any) => {
                 return ((e.path === absolutePath) || e.path === relativePath);
             }).length <= 0) {
@@ -148,4 +157,28 @@ export class ConfigHandler {
         }
         return zenFiles;
     }
+
+    static getConfiguredRegExps(): ZenRegex[] {
+        const config = this.getConfiguration();
+        let regexs: any = config.get("zenRegExps");
+        let zenRegexs: ZenRegex[] = [];
+
+        if (regexs === undefined) {
+            regexs = [];
+        }
+
+        for (let regex of regexs) {
+            zenRegexs.push(new ZenRegex(new RegExp(regex)));
+        }
+        return zenRegexs;
+    }
+
+    static isRegExpWarningEnabled(): boolean {
+        const config = this.getConfiguration();
+        let warningEnabled: boolean | undefined = config.get('enableRegExWarning');
+        if(warningEnabled === undefined) {
+            warningEnabled = true;
+        }
+        return warningEnabled;
+    } 
 }

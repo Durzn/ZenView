@@ -4,9 +4,7 @@ import { zenViewGlobals } from './ZenViewGlobals';
 import { zenViewUtil } from './ZenViewUtil';
 import { ConfigHandler } from './ConfigHandler';
 import { ZenViewAlphabeticalSorter, ZenViewFileSorterFolderFirst } from './ZenViewSorter';
-const { readdir } = require('fs').promises;
-const { resolve } = require('path');
-
+import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
   public readonly rootPath: string;
@@ -98,7 +96,7 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
     if (element) {
       let zenViewFiles: ZenViewFile[] = [];
-      for await (const file of this.getFiles(vscode.Uri.file(element.fileUri))) {
+      for await (const file of ZenFileSystemHandler.getFiles(vscode.Uri.file(element.fileUri))) {
         zenViewFiles.push(file);
       }
       let alphabeticalSorter = new ZenViewAlphabeticalSorter();
@@ -111,20 +109,6 @@ export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
     }
     else { /* root */
       return zenViewGlobals.zenPaths;
-    }
-  }
-
-  private async* getFiles(dir: vscode.Uri): AsyncGenerator<ZenViewFile> {
-    const dirents = await readdir(dir.fsPath, { withFileTypes: true });
-    for (const dirent of dirents) {
-      const res = resolve(dir.fsPath, dirent.name);
-      let resUri = vscode.Uri.file(res);
-      let fileType = zenViewUtil.getFileType(resUri, ConfigHandler.getUsedStatFunction());
-      if (dirent.isDirectory()) {
-        yield zenViewUtil.convertFileToZenFile(resUri.fsPath, fileType);
-      } else {
-        yield zenViewUtil.convertFileToZenFile(resUri.fsPath, fileType);
-      }
     }
   }
 
