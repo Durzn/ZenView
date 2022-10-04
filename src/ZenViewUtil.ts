@@ -31,26 +31,34 @@ export class ZenViewUtil {
         return returnString;
     }
 
-    public convertFileToZenFile(fileUri: string, fileType: vscode.FileType, fileName : string | undefined = this.getFileName(fileUri)) {
+    public convertFileToZenFile(fileUri: string, fileType: vscode.FileType, fileName: string | undefined = this.getFileName(fileUri)) {
         let collapsibleState = fileType === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
         return new ZenViewFile(fileUri, collapsibleState, fileType, fileName);
     }
 
     public getFileType(fileUri: vscode.Uri, statSyncFunc: any): vscode.FileType {
         let fileType: vscode.FileType = vscode.FileType.Unknown;
-        let fileInfo = statSyncFunc(fileUri.fsPath);
-        let isDirectory: boolean = fileInfo.isDirectory();
-        let isSymbolicLink: boolean = fileInfo.isSymbolicLink();
-        let isFile: boolean = fileInfo.isFile();
+        let fileInfo = undefined;
+        try {
+            fileInfo = statSyncFunc(fileUri.fsPath);
+        }
+        catch (error: unknown) {
+            return vscode.FileType.Unknown;
+        }
+        if (fileInfo !== undefined) {
+            let isDirectory: boolean = fileInfo.isDirectory();
+            let isSymbolicLink: boolean = fileInfo.isSymbolicLink();
+            let isFile: boolean = fileInfo.isFile();
 
-        if (isSymbolicLink) {
-            fileType = vscode.FileType.SymbolicLink;
-        }
-        else if (isDirectory) {
-            fileType = vscode.FileType.Directory;
-        }
-        else if (isFile) {
-            fileType = vscode.FileType.File;
+            if (isSymbolicLink) {
+                fileType = vscode.FileType.SymbolicLink;
+            }
+            else if (isDirectory) {
+                fileType = vscode.FileType.Directory;
+            }
+            else if (isFile) {
+                fileType = vscode.FileType.File;
+            }
         }
         return fileType;
     }
@@ -58,4 +66,4 @@ export class ZenViewUtil {
 
 let zenViewUtil: ZenViewUtil = new ZenViewUtil();
 
-export {zenViewUtil};
+export { zenViewUtil };
