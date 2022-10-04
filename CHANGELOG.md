@@ -1,6 +1,11 @@
 # Change Log
 
 All notable changes to the "zenview" extension will be documented in this file.
+
+## [1.5.1] - 2022-10-04
+### Changed
+- Fixed error where nothing would be shown in case a symlink couldn't be resolved
+
 ## [1.5.0] - 2022-02-07
 ### Added
 - Added regular expressions to configuration
