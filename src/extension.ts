@@ -97,6 +97,8 @@ async function registerFunctions(rootPath: vscode.Uri) {
     }
   });
 
+  /* Unfortunately the normal context menu items cannot be applied, see https://github.com/Microsoft/vscode/issues/48932 */
+  /* Renaming/Hotkeys in general do not work, see https://github.com/microsoft/vscode/issues/130880 */
   vscode.commands.registerCommand('zenView.rename', async (file: ZenViewFile) => {
     let fileUri = file.fileUri.replace(/\\/g, '/');
     let dirPath = fileUri.substring(0, fileUri.lastIndexOf('/')) + "/";
