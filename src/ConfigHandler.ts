@@ -59,7 +59,7 @@ export class ConfigHandler {
         let fileFound: boolean = false;
         for (let zenPath of configuredZenPaths) {
             let jsonObject: { name: string, path: string } = { name: zenPath.fileName, path: zenPath.fileUri };
-            if (zenPath.fileUri === keyPath) {
+            if (zenViewUtil.getAbsolutePath(zenPath.fileUri) === zenViewUtil.getAbsolutePath(keyPath)) {
                 fileFound = true;
                 continue;
             }
@@ -147,7 +147,7 @@ export class ConfigHandler {
                 let fileExists = fs.existsSync(absPath);
                 if (fileExists) {
                     let fileType: vscode.FileType = zenViewUtil.getFileType(vscode.Uri.file(absPath), ConfigHandler.getUsedStatFunction());
-                    zenFiles.push(zenViewUtil.convertFileToZenFile(absPath, fileType, zenTuple.name));
+                    zenFiles.push(zenViewUtil.convertFileToZenFile(absPath, fileType, zenTuple.name, true));
                 }
             }
         }

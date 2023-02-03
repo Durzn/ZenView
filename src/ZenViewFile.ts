@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
-import { zenViewUtil } from './ZenViewUtil';
 
 export enum FileContextValue {
   file = "file",
-  directory = "directory"
+  directory = "directory",
+  root = "root",
+  symlink = "symbolicLink"
 };
 
 export class ZenViewFile extends vscode.TreeItem {
@@ -11,27 +12,23 @@ export class ZenViewFile extends vscode.TreeItem {
       public readonly fileUri: string,
       public readonly collapsibleState: vscode.TreeItemCollapsibleState,
       public readonly fileType: vscode.FileType,
-      public readonly fileName: string
+      public readonly fileName: string,
+      public readonly resourceUri: vscode.Uri,
+      public readonly fileContext: FileContextValue | undefined,
+      public readonly command: vscode.TreeItem["command"] | undefined,
+      public readonly iconPath: vscode.ThemeIcon | undefined,
+      public readonly isRoot: boolean
     ) {
       super(fileName, collapsibleState);
       this.fileType = fileType;
-      this.resourceUri = vscode.Uri.parse(vscode.Uri.file(zenViewUtil.getAbsolutePath(fileUri)).path);
-      if(fileType === vscode.FileType.Directory) {
-        this.contextValue = FileContextValue.directory;
-        this.iconPath = vscode.ThemeIcon.Folder;
+      this.resourceUri = resourceUri;
+      if(fileContext) {
+        this.contextValue = fileContext;
       }
-      else if(fileType === vscode.FileType.File) {
-        this.contextValue = FileContextValue.file;
-        this.iconPath = vscode.ThemeIcon.File;
-        this.command = {
-          'title': "Open file",
-          'command': "zenView.open",
-          'tooltip': "Open file",
-          'arguments': [this.fileUri]
-        };
+      if(isRoot) {
+        this.contextValue += " isRoot";
       }
-      else if(fileType === vscode.FileType.SymbolicLink) {
-        this.contextValue = "symbolicLink";
-      }
+      this.command = command;
+      this.iconPath = iconPath;
     }
   }

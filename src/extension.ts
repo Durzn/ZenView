@@ -91,7 +91,7 @@ async function registerFunctions(rootPath: vscode.Uri) {
     try {
       await vscode.workspace.fs.stat(newUri);
     }
-    catch (e: unknown) { /* File does not exist, create new file */
+    catch (e) { /* File does not exist, create new file */
       await vscode.workspace.fs.writeFile(newUri, new Uint8Array());
       zenViewProvider.refresh();
     }
@@ -119,5 +119,10 @@ async function registerFunctions(rootPath: vscode.Uri) {
     await vscode.workspace.fs.delete(vscode.Uri.file(file.fileUri), { recursive: true, useTrash: true });
 
     zenViewProvider.refresh();
+  });
+
+  vscode.commands.registerCommand('zenView.removeFromConfig', async (file: ZenViewFile) => {
+    await ConfigHandler.removeZenPath(zenViewGlobals.rootPath!.fsPath, zenViewUtil.getAbsolutePath(file.fileUri));
+    onConfigChange();
   });
 }

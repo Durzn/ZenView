@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { ZenViewFile } from './ZenViewFile';
+import { ZenViewFileBuilder } from './ZenViewFileBuilder';
 import * as Path from 'path';
 
 export class ZenViewUtil {
@@ -31,9 +31,10 @@ export class ZenViewUtil {
         return returnString;
     }
 
-    public convertFileToZenFile(fileUri: string, fileType: vscode.FileType, fileName: string | undefined = this.getFileName(fileUri)) {
+    public convertFileToZenFile(fileUri: string, fileType: vscode.FileType, fileName: string | undefined = this.getFileName(fileUri), isRoot: boolean = false) {
         let collapsibleState = fileType === vscode.FileType.Directory ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None;
-        return new ZenViewFile(fileUri, collapsibleState, fileType, fileName);
+        let zenViewFileBuilder = new ZenViewFileBuilder();
+        return zenViewFileBuilder.build(fileUri, fileType, collapsibleState, fileName, isRoot);
     }
 
     public getFileType(fileUri: vscode.Uri, statSyncFunc: any): vscode.FileType {
@@ -42,7 +43,7 @@ export class ZenViewUtil {
         try {
             fileInfo = statSyncFunc(fileUri.fsPath);
         }
-        catch (error: unknown) {
+        catch (error) {
             return vscode.FileType.Unknown;
         }
         if (fileInfo !== undefined) {
