@@ -2,6 +2,14 @@
 
 All notable changes to the "zenview" extension will be documented in this file.
 
+## [1.6.1] - 2023-02-03
+### Changed
+- Added missing changelog entry for 1.6.0
+
+## [1.6.0] - 2023-02-03
+### Changed
+- Added option to remove ZenView root items via context menu in ZenView
+
 ## [1.5.1] - 2022-10-04
 ### Changed
 - Fixed error where nothing would be shown in case a symlink couldn't be resolved
