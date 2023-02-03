@@ -2,7 +2,7 @@
 	"name": "zenview",
 	"displayName": "Zen View",
 	"description": "Reduce clutter in project structures.",
-	"version": "1.5.1",
+	"version": "1.6.0",
 	"publisher": "Durzn",
 	"readme": "README.md",
 	"license": "SEE LICENSE IN LICENSE",
@@ -95,6 +95,11 @@
 					"command": "zenView.delete",
 					"when": "view == zenView",
 					"group": "zenGroup@2"
+				},
+				{
+					"command": "zenView.removeFromConfig",
+					"when": "view == zenView && viewItem =~ /isRoot/",
+					"group": "zenGroup@2"
 				}
 			],
 			"explorer/context": [
@@ -138,6 +143,10 @@
 			{
 				"command": "zenView.applyRegex",
 				"title": "Add all files to ZenView according to configured regular expressions."
+			},
+			{
+				"command": "zenView.removeFromConfig",
+				"title": "Remove from ZenView"
 			}
 		]
 	},
