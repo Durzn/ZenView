@@ -7,6 +7,7 @@ import { ZenViewFile } from './ZenViewFile';
 import * as Path from 'path';
 import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
+import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton } from './ZenViewInputBoxButtons';
 
 const zenViewProvider = new ZenViewProvider();
 
@@ -145,6 +146,13 @@ async function registerFunctions(rootPath: vscode.Uri) {
   });
 
   vscode.commands.registerCommand('zenView.searchInFiles', async () => {
-    /* TODO */
+    let inputBox = vscode.window.createInputBox();
+    let buttons: vscode.QuickInputButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
+    let searchAlgorithm;
+    inputBox.buttons = buttons;
+    inputBox.onDidTriggerButton((button) => {
+      
+    });
+    inputBox.show();
   });
 }
