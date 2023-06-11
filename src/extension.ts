@@ -146,6 +146,7 @@ async function registerFunctions(rootPath: vscode.Uri) {
   });
 
   vscode.commands.registerCommand('zenView.searchInFiles', async () => {
+    return; /* TODO: feature not yet implemented */
     let inputBox = vscode.window.createInputBox();
     let buttons: vscode.QuickInputButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
     let searchAlgorithm;
