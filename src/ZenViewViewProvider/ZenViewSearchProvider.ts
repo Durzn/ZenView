@@ -1,6 +1,8 @@
 import { CancellationToken, WebviewView, WebviewViewProvider, WebviewViewResolveContext, window, Uri } from "vscode";
 import * as vscode from 'vscode';
 import { getNonce } from "../Util/WebViewUtil";
+import ZenViewElement from "../WebView/ZenViewElement";
+import ZenViewInputBox from "../WebView/ZenViewInputBox";
 
 export class ZenViewSearchProvider implements WebviewViewProvider {
 
@@ -60,17 +62,14 @@ export class ZenViewSearchProvider implements WebviewViewProvider {
 				<link href="${styleVSCodeUri}" rel="stylesheet">
 				<link href="${styleMainUri}" rel="stylesheet">
 
-				<title>Cat Colors</title>
+				<title>Zen View</title>
 			</head>
 			<body>
-
-                <label for="fname">First name:</label>
-                <input> </input>
-
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
     }
 
     private View?: vscode.WebviewView;
+    private Elements: ZenViewElement[] = [new ZenViewInputBox(), new ZenViewInputBox()];
 }
