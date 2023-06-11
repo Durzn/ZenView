@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { zenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './Util/ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 
 export enum FilePathType {

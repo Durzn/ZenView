@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { ZenViewFileBuilder } from './ZenViewFileBuilder';
+import { ZenViewFileBuilder } from '../ZenViewFileBuilder';
 import * as Path from 'path';
-import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
-import { ZenViewFile } from './ZenViewFile';
-import { zenViewGlobals } from './ZenViewGlobals';
-import { ZenFileSystemHandler } from './ZenFileSystemHandler';
+import { ZenViewQuickPickItem } from '../ZenViewQuickPickItem';
+import { ZenViewFile } from '../ZenViewFile';
+import { zenViewGlobals } from '../ZenViewGlobals';
+import { ZenFileSystemHandler } from '../ZenFileSystemHandler';
 
 export class ZenViewUtil {
 

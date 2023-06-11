@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { FileContextValue, ZenViewFile } from './ZenViewFile';
-import { zenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './Util/ZenViewUtil';
 
 
 export class ZenViewFileBuilder {

@@ -58,20 +58,6 @@
 				}
 			}
 		],
-		"views": {
-			"zenview-view": [
-				{
-					"id": "zenView",
-					"name": "ZenView"
-				}
-			],
-			"zenview-search": [
-				{
-					"id": "zenView-search",
-					"name": "ZenView Search"
-				}
-			]
-		},
 		"menus": {
 			"view/title": [
 				{
@@ -162,9 +148,21 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "zenview-view",
+					"id": "zenview-container",
 					"title": "ZenView",
 					"icon": "./src/Treeview/laptop.svg"
+				}
+			]
+		},
+		"views": {
+			"zenview-container": [
+				{
+					"id": "zenview-explorer",
+					"name": "ZenView Explorer"
+				},
+				{
+					"id": "zenview-search",
+					"name": "ZenView Search"
 				}
 			]
 		}

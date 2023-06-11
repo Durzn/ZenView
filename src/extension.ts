@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { ZenViewProvider } from './ZenViewProvider';
+import { ZenViewTreeDataProvider } from './ZenViewViewProvider/ZenViewTreeDataProvider';
 import { zenViewGlobals } from './ZenViewGlobals';
 import { ConfigHandler, FilePathType, ZenRegex } from './ConfigHandler';
-import { zenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './Util/ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 import * as Path from 'path';
 import { ZenFileSystemHandler } from './ZenFileSystemHandler';
@@ -11,9 +11,10 @@ import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton, ZenViewS
 import { SearchFilter } from './SearchFilters';
 import { SearchAlgorithm } from './SearchAlgorithm';
 import { readFile, writeFile, stat, mkdir, rename } from 'fs';
+import { ZenViewSearchProvider } from './ZenViewViewProvider/ZenViewSearchProvider';
 const fs = require('fs');
 
-const zenViewProvider = new ZenViewProvider();
+const zenViewProvider = new ZenViewTreeDataProvider();
 
 export function activate(context: vscode.ExtensionContext) {
   let rootPath: vscode.Uri | undefined = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined;
@@ -21,7 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
     /* The extension does not work without a workspace. */
     return;
   }
-  vscode.window.registerTreeDataProvider('zenView', zenViewProvider);
+
+  const searchProvider = new ZenViewSearchProvider(context.extensionUri);
+
+  vscode.window.registerTreeDataProvider('zenview-explorer', zenViewProvider);
+
+  vscode.window.registerWebviewViewProvider('zenview-search', searchProvider);
 
   registerFunctions(rootPath);
 
