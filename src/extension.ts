@@ -6,6 +6,7 @@ import { zenViewUtil } from './ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 import * as Path from 'path';
 import { ZenFileSystemHandler } from './ZenFileSystemHandler';
+import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
 
 const zenViewProvider = new ZenViewProvider();
 
@@ -124,5 +125,26 @@ async function registerFunctions(rootPath: vscode.Uri) {
   vscode.commands.registerCommand('zenView.removeFromConfig', async (file: ZenViewFile) => {
     await ConfigHandler.removeZenPath(zenViewGlobals.rootPath!.fsPath, zenViewUtil.getAbsolutePath(file.fileUri));
     onConfigChange();
+  });
+
+  vscode.commands.registerCommand('zenView.pickFile', async () => {
+    let allFiles: ZenViewFile[] = [];
+    for (let path of zenViewGlobals.zenPaths) {
+      let files = await ZenFileSystemHandler.getFilesRecursive(vscode.Uri.file(path.fileUri));
+      for await (let file of files) {
+        allFiles.push(file);
+      }
+    }
+    allFiles = Array.from(new Set(allFiles)); /* Remove duplicates */
+    allFiles = allFiles.filter(item => item.fileType === vscode.FileType.File);
+    let items: ZenViewQuickPickItem[] = zenViewUtil.convertZenViewFilesToQuickPickItems(allFiles);
+    let itemChosen: ZenViewQuickPickItem | undefined = await vscode.window.showQuickPick(items);
+    if (itemChosen) {
+      vscode.commands.executeCommand('vscode.open', vscode.Uri.file(zenViewUtil.getAbsolutePath(itemChosen.path)));
+    }
+  });
+
+  vscode.commands.registerCommand('zenView.searchInFiles', async () => {
+    /* TODO */
   });
 }

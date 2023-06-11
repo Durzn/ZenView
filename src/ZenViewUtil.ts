@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { ZenViewFileBuilder } from './ZenViewFileBuilder';
 import * as Path from 'path';
+import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
+import { ZenViewFile } from './ZenViewFile';
 
 export class ZenViewUtil {
 
@@ -62,6 +64,14 @@ export class ZenViewUtil {
             }
         }
         return fileType;
+    }
+
+    public convertZenViewFilesToQuickPickItems(files: ZenViewFile[]): ZenViewQuickPickItem[] {
+        let items: ZenViewQuickPickItem[] = [];
+        for (let file of files) {
+            items.push(new ZenViewQuickPickItem(file.fileName, file.fileUri, file.fileType));
+        }
+        return items;
     }
 }
 

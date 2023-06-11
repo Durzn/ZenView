@@ -23,9 +23,7 @@
 	"engines": {
 		"vscode": "^1.42.0"
 	},
-	"activationEvents": [
-		"onView:zenView"
-	],
+	"activationEvents": [],
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": [
@@ -105,13 +103,11 @@
 			"explorer/context": [
 				{
 					"command": "zenView.addAbsolutePath",
-					"group": "zenGroup@1",
-					"when": ""
+					"group": "zenGroup@1"
 				},
 				{
 					"command": "zenView.addRelativePath",
-					"group": "zenGroup@1",
-					"when": ""
+					"group": "zenGroup@1"
 				}
 			]
 		},
@@ -147,6 +143,14 @@
 			{
 				"command": "zenView.removeFromConfig",
 				"title": "Remove from ZenView"
+			},
+			{
+				"command": "zenView.pickFile",
+				"title": "Open a file that was added to ZenView from a dropdown menu."
+			},
+			{
+				"command": "zenView.searchInFiles",
+				"title": "Search text within all files that were added to the ZenView."
 			}
 		]
 	},
