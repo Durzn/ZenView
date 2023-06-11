@@ -157,12 +157,20 @@
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./"
+		"watch": "tsc -watch -p ./",
+		"test": "jest"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.21.4",
+		"@babel/preset-env": "^7.21.4",
+		"@babel/preset-typescript": "^7.21.4",
+		"@types/jest": "^29.5.1",
 		"@types/node": "^10.12.21",
 		"@types/vscode": "^1.42.0",
-		"typescript": "^3.5.1",
-		"tslint": "^5.12.1"
+		"babel-jest": "^29.5.0",
+		"jest": "^29.5.0",
+		"ts-node": "^10.9.1",
+		"tslint": "^5.12.1",
+		"typescript": "^3.5.1"
 	}
 }
