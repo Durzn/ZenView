@@ -10,6 +10,8 @@ import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
 import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton, ZenViewSearchButton } from './ZenViewInputBoxButtons';
 import { SearchFilter } from './SearchFilters';
 import { SearchAlgorithm } from './SearchAlgorithm';
+import { readFile, writeFile, stat, mkdir, rename } from 'fs';
+const fs = require('fs');
 
 const zenViewProvider = new ZenViewProvider();
 
@@ -84,21 +86,23 @@ async function registerFunctions(rootPath: vscode.Uri) {
     let newDirName: string | undefined = await vscode.window.showInputBox();
     if (!newDirName) { return; };
     let newUri = Path.join(root.fileUri, newDirName);
-    await vscode.workspace.fs.createDirectory(vscode.Uri.file(newUri));
-    zenViewProvider.refresh();
+    mkdir(newUri, () => {
+      zenViewProvider.refresh();
+    });
   });
 
   vscode.commands.registerCommand('zenView.addFile', async (root: ZenViewFile) => {
     let newDirName: string | undefined = await vscode.window.showInputBox();
     if (!newDirName) { return; };
     let newUri: vscode.Uri = vscode.Uri.file(Path.join(root.fileUri, newDirName));
-    try {
-      await vscode.workspace.fs.stat(newUri);
-    }
-    catch (e) { /* File does not exist, create new file */
-      await vscode.workspace.fs.writeFile(newUri, new Uint8Array());
-      zenViewProvider.refresh();
-    }
+    stat(newUri.fsPath, (err) => {
+      if (err) {
+        /* File does not exist, create new file */
+        writeFile(newUri.fsPath, new Uint8Array(), () => {
+          zenViewProvider.refresh();
+        });
+      }
+    });
   });
 
   /* Unfortunately the normal context menu items cannot be applied, see https://github.com/Microsoft/vscode/issues/48932 */
@@ -112,17 +116,18 @@ async function registerFunctions(rootPath: vscode.Uri) {
 
     zenViewProvider.onFileRename(vscode.Uri.file(fileUri), newUri); /* Needs to be done manually, vscode will not throw a file rename event. */
 
-    await vscode.workspace.fs.rename(vscode.Uri.file(fileUri), newUri, { overwrite: true });
+    rename(fileUri, newUri.fsPath, () => {
+      zenViewProvider.refresh();
+    });
 
-    zenViewProvider.refresh();
   });
 
   vscode.commands.registerCommand('zenView.delete', async (file: ZenViewFile) => {
     zenViewProvider.onFileDelete(vscode.Uri.file(file.fileUri)); /* Needs to be done manually, vscode will not throw a file deletion event. */
 
-    await vscode.workspace.fs.delete(vscode.Uri.file(file.fileUri), { recursive: true, useTrash: true });
-
-    zenViewProvider.refresh();
+    fs.rm(file.fileUri, { recursive: true, useTrash: true }, () => {
+      zenViewProvider.refresh();
+    });
   });
 
   vscode.commands.registerCommand('zenView.removeFromConfig', async (file: ZenViewFile) => {
@@ -152,16 +157,15 @@ async function registerFunctions(rootPath: vscode.Uri) {
       let files = await zenViewUtil.getAllZenFiles();
 
       for (let file of files) {
-        try {
-          let text = await vscode.workspace.fs.readFile(vscode.Uri.file(file.fileUri));
+        let text = readFile(file.fileUri, (err, text) => {
+          if (err) return;
+
           let indices = search(text.toString(), inputBox.value, filters);
           if (indices.length > 0) {
             /* TODO: Show findings in view */
           }
-        }
-        catch (err) {
+        });
 
-        }
       }
     });
     inputBox.show();
