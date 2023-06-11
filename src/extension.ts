@@ -7,7 +7,9 @@ import { ZenViewFile } from './ZenViewFile';
 import * as Path from 'path';
 import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
-import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton } from './ZenViewInputBoxButtons';
+import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton, ZenViewSearchButton } from './ZenViewInputBoxButtons';
+import { SearchFilter } from './SearchFilters';
+import { SearchAlgorithm } from './SearchAlgorithm';
 
 const zenViewProvider = new ZenViewProvider();
 
@@ -129,13 +131,7 @@ async function registerFunctions(rootPath: vscode.Uri) {
   });
 
   vscode.commands.registerCommand('zenView.pickFile', async () => {
-    let allFiles: ZenViewFile[] = [];
-    for (let path of zenViewGlobals.zenPaths) {
-      let files = await ZenFileSystemHandler.getFilesRecursive(vscode.Uri.file(path.fileUri));
-      for await (let file of files) {
-        allFiles.push(file);
-      }
-    }
+    let allFiles = await zenViewUtil.getAllZenFiles();
     allFiles = Array.from(new Set(allFiles)); /* Remove duplicates */
     allFiles = allFiles.filter(item => item.fileType === vscode.FileType.File);
     let items: ZenViewQuickPickItem[] = zenViewUtil.convertZenViewFilesToQuickPickItems(allFiles);
@@ -146,14 +142,33 @@ async function registerFunctions(rootPath: vscode.Uri) {
   });
 
   vscode.commands.registerCommand('zenView.searchInFiles', async () => {
-    return; /* TODO: feature not yet implemented */
     let inputBox = vscode.window.createInputBox();
-    let buttons: vscode.QuickInputButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
-    let searchAlgorithm;
+    let buttons: ZenViewSearchButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
     inputBox.buttons = buttons;
-    inputBox.onDidTriggerButton((button) => {
-      
+    inputBox.onDidTriggerButton(async (button) => {
+      let zenButton = button as ZenViewSearchButton;
+      zenButton.toggle();
+      let filters = buttons.filter(button => button.isActive).map(button => button.searchFilter);
+      let files = await zenViewUtil.getAllZenFiles();
+
+      for (let file of files) {
+        try {
+          let text = await vscode.workspace.fs.readFile(vscode.Uri.file(file.fileUri));
+          let indices = search(text.toString(), inputBox.value, filters);
+          if (indices.length > 0) {
+            /* TODO: Show findings in view */
+          }
+        }
+        catch (err) {
+
+        }
+      }
     });
     inputBox.show();
   });
+}
+
+function search(text: string, key: string, filters: SearchFilter[]): number[] {
+  let searchAlgorithm = new SearchAlgorithm();
+  return searchAlgorithm.search(text, key, filters);
 }

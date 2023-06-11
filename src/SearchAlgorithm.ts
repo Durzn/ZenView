@@ -4,6 +4,10 @@ export class SearchAlgorithm {
     public search(text: string, key: string, filters: SearchFilter[]): number[] {
         let indices: number[] = [];
 
+        if (key === '') {
+            return [];
+        }
+
         if (filters.length > 0) {
             indices = this.searchWithFilters(text, key, filters);
         }

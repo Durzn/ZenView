@@ -3,6 +3,8 @@ import { ZenViewFileBuilder } from './ZenViewFileBuilder';
 import * as Path from 'path';
 import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
 import { ZenViewFile } from './ZenViewFile';
+import { zenViewGlobals } from './ZenViewGlobals';
+import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 
 export class ZenViewUtil {
 
@@ -72,6 +74,17 @@ export class ZenViewUtil {
             items.push(new ZenViewQuickPickItem(file.fileName, file.fileUri, file.fileType));
         }
         return items;
+    }
+
+    public async getAllZenFiles(): Promise<ZenViewFile[]> {
+        let zenFiles: ZenViewFile[] = [];
+        for (let path of zenViewGlobals.zenPaths) {
+            let files = await ZenFileSystemHandler.getFilesRecursive(vscode.Uri.file(path.fileUri));
+            for await (let file of files) {
+                zenFiles.push(file);
+            }
+        }
+        return zenFiles;
     }
 }
 
