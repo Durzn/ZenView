@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { zenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './Util/ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 
 export enum FilePathType {
@@ -76,7 +76,7 @@ export class ConfigHandler {
 
     static async addZenPath(path: string, filePathType: FilePathType): Promise<boolean> {
         const config = this.getConfiguration();
-        let fileExists = fs.existsSync(zenViewUtil.getAbsolutePath(path));
+        let fileExists = fs.statSync(zenViewUtil.getAbsolutePath(path));
         if (fileExists) {
             let currentPaths: any = config.get("zenPaths");
             if (currentPaths === undefined) {
@@ -144,7 +144,7 @@ export class ConfigHandler {
         for (let zenTuple of zenTuples) {
             if (zenTuple.hasOwnProperty("name") && zenTuple.hasOwnProperty("path")) {
                 let absPath = zenViewUtil.getAbsolutePath(zenTuple.path);
-                let fileExists = fs.existsSync(absPath);
+                let fileExists = fs.statSync(absPath);
                 if (fileExists) {
                     let fileType: vscode.FileType = zenViewUtil.getFileType(vscode.Uri.file(absPath), ConfigHandler.getUsedStatFunction());
                     zenFiles.push(zenViewUtil.convertFileToZenFile(absPath, fileType, zenTuple.name, true));
@@ -176,9 +176,9 @@ export class ConfigHandler {
     static isRegExpWarningEnabled(): boolean {
         const config = this.getConfiguration();
         let warningEnabled: boolean | undefined = config.get('enableRegExWarning');
-        if(warningEnabled === undefined) {
+        if (warningEnabled === undefined) {
             warningEnabled = true;
         }
         return warningEnabled;
-    } 
+    }
 }

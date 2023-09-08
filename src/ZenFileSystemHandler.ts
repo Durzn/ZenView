@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode';
-import { zenViewUtil } from './ZenViewUtil';
+import { zenViewUtil } from './Util/ZenViewUtil';
 import { ZenViewFile } from './ZenViewFile';
 import { ConfigHandler } from './ConfigHandler';
 const { readdir } = require('fs').promises;

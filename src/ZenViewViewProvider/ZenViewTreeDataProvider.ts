@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { ZenViewFile } from './ZenViewFile';
-import { zenViewGlobals } from './ZenViewGlobals';
-import { zenViewUtil } from './ZenViewUtil';
-import { ConfigHandler } from './ConfigHandler';
-import { ZenViewAlphabeticalSorter, ZenViewFileSorterFolderFirst } from './ZenViewSorter';
-import { ZenFileSystemHandler } from './ZenFileSystemHandler';
-export class ZenViewProvider implements vscode.TreeDataProvider<ZenViewFile> {
+import { ZenViewFile } from '../ZenViewFile';
+import { zenViewGlobals } from '../ZenViewGlobals';
+import { zenViewUtil } from '../Util/ZenViewUtil';
+import { ConfigHandler } from '../ConfigHandler';
+import { ZenViewAlphabeticalSorter, ZenViewFileSorterFolderFirst } from '../ZenViewSorter';
+import { ZenFileSystemHandler } from '../ZenFileSystemHandler';
+export class ZenViewTreeDataProvider implements vscode.TreeDataProvider<ZenViewFile> {
 
   public readonly rootPath: string;
 
