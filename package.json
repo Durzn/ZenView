@@ -23,7 +23,9 @@
 	"engines": {
 		"vscode": "^1.42.0"
 	},
-	"activationEvents": [],
+	"activationEvents": [
+		"onStartupFinished"
+	],
 	"main": "./out/src/extension.js",
 	"contributes": {
 		"configuration": [
@@ -62,33 +64,33 @@
 			"view/title": [
 				{
 					"command": "zenView.applyRegex",
-					"when": "view == zenView"
+					"when": "view == zenview-explorer"
 				}
 			],
 			"view/item/context": [
 				{
 					"command": "zenView.addDirectory",
-					"when": "view == zenView && viewItem == 'directory'",
+					"when": "view == zenview-explorer && viewItem == 'directory'",
 					"group": "zenGroup@1"
 				},
 				{
 					"command": "zenView.addFile",
-					"when": "view == zenView && viewItem == 'directory'",
+					"when": "view == zenview-explorer && viewItem == 'directory'",
 					"group": "zenGroup@1"
 				},
 				{
 					"command": "zenView.rename",
-					"when": "view == zenView",
+					"when": "view == zenview-explorer",
 					"group": "zenGroup@1"
 				},
 				{
 					"command": "zenView.delete",
-					"when": "view == zenView",
+					"when": "view == zenview-explorer",
 					"group": "zenGroup@2"
 				},
 				{
 					"command": "zenView.removeFromConfig",
-					"when": "view == zenView && viewItem =~ /isRoot/",
+					"when": "view == zenview-explorer && viewItem =~ /isRoot/",
 					"group": "zenGroup@2"
 				}
 			],
