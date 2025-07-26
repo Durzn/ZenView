@@ -1,12 +1,12 @@
 import { ConfigHandler } from "./ConfigHandler";
 import * as vscode from 'vscode';
 import { ZenViewFile } from "./ZenViewFile";
-import { FilterResult } from "./SearchFilters";
+import { SearchResult } from "./SearchAlgorithm";
 
 export class ZenViewGlobals {
     public rootPath: vscode.Uri | undefined;
     public zenPaths!: ZenViewFile[];
-    public searchResults: FilterResult[] = [];
+    public searchResults: SearchResult[] = [];
 
     constructor() {
         this.rootPath = vscode.workspace.workspaceFolders![0].uri;
