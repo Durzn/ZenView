@@ -11,6 +11,10 @@ export class BaseFilter implements SearchFilter {
         const results: SearchResult[] = [];
         const lines = text.split('\n');
 
+        if (key === "") {
+            return [];
+        }
+
         for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             const line = lines[lineIndex];
             const matches = [...line.matchAll(new RegExp(this.escapeRegExp(key), "gi"))];
