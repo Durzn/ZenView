@@ -5,13 +5,16 @@ import ZenViewElement from "../WebView/ZenViewElement";
 import ZenViewInputBox from "../WebView/ZenViewInputBox";
 
 export class ZenViewSearchProvider implements WebviewViewProvider {
+    private View?: vscode.WebviewView;
+    private Elements: ZenViewElement[] = [new ZenViewInputBox(), new ZenViewInputBox()];
 
     constructor(
         private readonly ExtensionUri: Uri) {
-
     }
+
     resolveWebviewView(webviewView: WebviewView, context: WebviewViewResolveContext<unknown>, token: CancellationToken): void | Thenable<void> {
         this.View = webviewView;
+
         webviewView.webview.options = {
             enableScripts: true,
             localResourceRoots: [
@@ -23,6 +26,12 @@ export class ZenViewSearchProvider implements WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage(data => {
             switch (data.type) {
+                case 'search':
+                    {
+                        // Handle search functionality
+                        this.handleSearch(data.query, data.options);
+                        break;
+                    }
                 case 'colorSelected':
                     {
                         window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`#${data.value}`));
@@ -30,6 +39,19 @@ export class ZenViewSearchProvider implements WebviewViewProvider {
                     }
             }
         });
+    }
+
+    private handleSearch(query: string, options: any) {
+        // Implement your search logic here
+        console.log('Searching for:', query, 'with options:', options);
+
+        // Send results back to webview
+        if (this.View) {
+            this.View.webview.postMessage({
+                type: 'searchResults',
+                results: [] // Your search results here
+            });
+        }
     }
 
     private _getHtmlForWebview(webview: vscode.Webview) {
@@ -62,14 +84,21 @@ export class ZenViewSearchProvider implements WebviewViewProvider {
 				<link href="${styleVSCodeUri}" rel="stylesheet">
 				<link href="${styleMainUri}" rel="stylesheet">
 
-				<title>Zen View</title>
+				<title>Zen View Search</title>
 			</head>
 			<body>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search in files..." />
+                    <div class="search-options">
+                        <label><input type="checkbox" id="caseSensitive"> Case sensitive</label>
+                        <label><input type="checkbox" id="wholeWord"> Whole word</label>
+                        <label><input type="checkbox" id="regex"> Regex</label>
+                    </div>
+                    <button id="searchButton">Search</button>
+                    <div id="searchResults"></div>
+                </div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
     }
-
-    private View?: vscode.WebviewView;
-    private Elements: ZenViewElement[] = [new ZenViewInputBox(), new ZenViewInputBox()];
 }

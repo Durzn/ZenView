@@ -94,7 +94,7 @@ export class ConfigHandler {
                 let fileName = zenViewUtil.getFileName(path);
                 let jsonObj = { "name": fileName, "path": path };
                 currentPaths.push(jsonObj);
-                await config.update("zenPaths", currentPaths);
+                await config.update("zenPaths", currentPaths, vscode.ConfigurationTarget.WorkspaceFolder);
                 return true;
             }
         }

@@ -79,9 +79,14 @@ export class ZenViewUtil {
     public async getAllZenFiles(): Promise<ZenViewFile[]> {
         let zenFiles: ZenViewFile[] = [];
         for (let path of zenViewGlobals.zenPaths) {
-            let files = await ZenFileSystemHandler.getFilesRecursive(vscode.Uri.file(path.fileUri));
-            for await (let file of files) {
-                zenFiles.push(file);
+            if (path.fileType === vscode.FileType.Directory) {
+                let files = ZenFileSystemHandler.getFilesRecursive(vscode.Uri.file(path.fileUri));
+                for await (let file of files) {
+                    zenFiles.push(file);
+                }
+            }
+            else {
+                zenFiles.push(path);
             }
         }
         return zenFiles;

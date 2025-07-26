@@ -1,72 +1,233 @@
-export class FilterResult {
-    constructor(public text: string, public index: number) { }
-}
+import { SearchResult } from "./SearchAlgorithm";
+import * as vscode from 'vscode';
 
 export interface SearchFilter {
-    filterText(text: string, key: string): FilterResult[];
-    filterResults(results: FilterResult[], key: string): FilterResult[];
+    filterText(text: string, key: string): SearchResult[];
+    filterResults(results: SearchResult[], key: string): SearchResult[];
 }
 
 export class BaseFilter implements SearchFilter {
-    public filterText(text: string, key: string): FilterResult[] {
-        return [new FilterResult(text, 0)];
+    public filterText(text: string, key: string): SearchResult[] {
+        const results: SearchResult[] = [];
+        const lines = text.split('\n');
+
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            const matches = [...line.matchAll(new RegExp(this.escapeRegExp(key), "gi"))];
+
+            for (const match of matches) {
+                if (match.index !== undefined) {
+                    const startPos = new vscode.Position(lineIndex, match.index);
+                    const endPos = new vscode.Position(lineIndex, match.index + match[0].length);
+                    const range = new vscode.Range(startPos, endPos);
+
+                    results.push({
+                        text: match[0],
+                        range: range
+                    });
+                }
+            }
+        }
+
+        return results;
     }
 
-    public filterResults(results: FilterResult[], key: string): FilterResult[] {
+    public filterResults(results: SearchResult[], key: string): SearchResult[] {
         return results;
+    }
+
+    protected escapeRegExp(string: string): string {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 }
 
 export class WholeWordFilter implements SearchFilter {
-    public filterText(text: string, key: string): FilterResult[] {
-        let regExp = new RegExp(new RegExp(`\\b${key}\\b`, 'gi'));
-        return applyRegex(text, regExp);
+    public filterText(text: string, key: string): SearchResult[] {
+        const results: SearchResult[] = [];
+        const lines = text.split('\n');
+        const regExp = new RegExp(`\\b${this.escapeRegExp(key)}\\b`, 'gi');
+
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            const matches = [...line.matchAll(regExp)];
+
+            for (const match of matches) {
+                if (match.index !== undefined) {
+                    const startPos = new vscode.Position(lineIndex, match.index);
+                    const endPos = new vscode.Position(lineIndex, match.index + match[0].length);
+                    const range = new vscode.Range(startPos, endPos);
+
+                    results.push({
+                        text: match[0],
+                        range: range
+                    });
+                }
+            }
+        }
+
+        return results;
     }
 
-    public filterResults(results: FilterResult[], key: string): FilterResult[] {
-        let regExp = new RegExp(`\\b${key}\\b`, 'gi');
+    public filterResults(results: SearchResult[], key: string): SearchResult[] {
+        const filteredResults: SearchResult[] = [];
+        const regExp = new RegExp(`\\b${this.escapeRegExp(key)}\\b`, 'gi');
 
-        return filter(results, regExp);
+        for (const result of results) {
+            const matches = [...result.text.matchAll(regExp)];
+
+            for (const match of matches) {
+                if (match.index !== undefined) {
+                    // Calculate the absolute position within the original text
+                    const originalStartLine = result.range.start.line;
+                    const originalStartChar = result.range.start.character;
+
+                    // For simplicity, assuming the match is on the same line
+                    const newStartPos = new vscode.Position(originalStartLine, originalStartChar + match.index);
+                    const newEndPos = new vscode.Position(originalStartLine, originalStartChar + match.index + match[0].length);
+                    const newRange = new vscode.Range(newStartPos, newEndPos);
+
+                    filteredResults.push({
+                        text: match[0],
+                        range: newRange
+                    });
+                }
+            }
+        }
+
+        return filteredResults;
+    }
+
+    protected escapeRegExp(string: string): string {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 }
 
 export class MatchCaseFilter implements SearchFilter {
-    public filterText(text: string, key: string): FilterResult[] {
-        let regExp = new RegExp(`${key}`, 'g');
-        return applyRegex(text, regExp);
-    }
+    public filterText(text: string, key: string): SearchResult[] {
+        const results: SearchResult[] = [];
+        const lines = text.split('\n');
+        const regExp = new RegExp(this.escapeRegExp(key), 'g');
 
-    public filterResults(results: FilterResult[], key: string): FilterResult[] {
-        let regExp = new RegExp(`${key}`, 'g');
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            const matches = [...line.matchAll(regExp)];
 
-        return filter(results, regExp);
-    }
-}
+            for (const match of matches) {
+                if (match.index !== undefined) {
+                    const startPos = new vscode.Position(lineIndex, match.index);
+                    const endPos = new vscode.Position(lineIndex, match.index + match[0].length);
+                    const range = new vscode.Range(startPos, endPos);
 
-function applyRegex(text: string, regExp: RegExp): FilterResult[] {
-    let filterResults: FilterResult[] = [];
-    let matchResult = text.matchAll(regExp);
-
-    if (matchResult) {
-        for (let result of matchResult) {
-            filterResults = filterResults.concat(new FilterResult(result[0], result.index!));
-        }
-    }
-
-    return filterResults;
-}
-
-function filter(results: FilterResult[], regExp: RegExp): FilterResult[] {
-    let filterResults: FilterResult[] = [];
-
-    for (let result of results) {
-        let matchResult = result.text.matchAll(regExp);
-        if (matchResult) {
-            for (let match of matchResult) {
-                filterResults = filterResults.concat(new FilterResult(match[0], match.index! + result.index));
+                    results.push({
+                        text: match[0],
+                        range: range
+                    });
+                }
             }
         }
+
+        return results;
     }
 
-    return filterResults;
+    public filterResults(results: SearchResult[], key: string): SearchResult[] {
+        const filteredResults: SearchResult[] = [];
+        const regExp = new RegExp(this.escapeRegExp(key), 'g');
+
+        for (const result of results) {
+            const matches = [...result.text.matchAll(regExp)];
+
+            for (const match of matches) {
+                if (match.index !== undefined) {
+                    // Calculate the absolute position within the original text
+                    const originalStartLine = result.range.start.line;
+                    const originalStartChar = result.range.start.character;
+
+                    // For simplicity, assuming the match is on the same line
+                    const newStartPos = new vscode.Position(originalStartLine, originalStartChar + match.index);
+                    const newEndPos = new vscode.Position(originalStartLine, originalStartChar + match.index + match[0].length);
+                    const newRange = new vscode.Range(newStartPos, newEndPos);
+
+                    filteredResults.push({
+                        text: match[0],
+                        range: newRange
+                    });
+                }
+            }
+        }
+
+        return filteredResults;
+    }
+
+    protected escapeRegExp(string: string): string {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+}
+
+export class RegexFilter implements SearchFilter {
+    public filterText(text: string, key: string): SearchResult[] {
+        const results: SearchResult[] = [];
+        const lines = text.split('\n');
+
+        try {
+            const regExp = new RegExp(key, 'gi');
+
+            for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+                const line = lines[lineIndex];
+                const matches = [...line.matchAll(regExp)];
+
+                for (const match of matches) {
+                    if (match.index !== undefined) {
+                        const startPos = new vscode.Position(lineIndex, match.index);
+                        const endPos = new vscode.Position(lineIndex, match.index + match[0].length);
+                        const range = new vscode.Range(startPos, endPos);
+
+                        results.push({
+                            text: match[0],
+                            range: range
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            // Invalid regex, return empty results
+            console.error('Invalid regex pattern:', key, error);
+        }
+
+        return results;
+    }
+
+    public filterResults(results: SearchResult[], key: string): SearchResult[] {
+        const filteredResults: SearchResult[] = [];
+
+        try {
+            const regExp = new RegExp(key, 'gi');
+
+            for (const result of results) {
+                const matches = [...result.text.matchAll(regExp)];
+
+                for (const match of matches) {
+                    if (match.index !== undefined) {
+                        // Calculate the absolute position within the original text
+                        const originalStartLine = result.range.start.line;
+                        const originalStartChar = result.range.start.character;
+
+                        // For simplicity, assuming the match is on the same line
+                        const newStartPos = new vscode.Position(originalStartLine, originalStartChar + match.index);
+                        const newEndPos = new vscode.Position(originalStartLine, originalStartChar + match.index + match[0].length);
+                        const newRange = new vscode.Range(newStartPos, newEndPos);
+
+                        filteredResults.push({
+                            text: match[0],
+                            range: newRange
+                        });
+                    }
+                }
+            }
+        } catch (error) {
+            // Invalid regex, return empty results
+            console.error('Invalid regex pattern:', key, error);
+        }
+
+        return filteredResults;
+    }
 }

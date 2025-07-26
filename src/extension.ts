@@ -9,7 +9,7 @@ import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
 import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton, ZenViewSearchButton } from './ZenViewInputBoxButtons';
 import { SearchFilter } from './SearchFilters';
-import { SearchAlgorithm } from './SearchAlgorithm';
+import { SearchAlgorithm, SearchResult } from './SearchAlgorithm';
 import { readFile, writeFile, stat, mkdir, rename } from 'fs';
 import { ZenViewSearchProvider } from './ZenViewViewProvider/ZenViewSearchProvider';
 const fs = require('fs');
@@ -152,7 +152,7 @@ async function registerFunctions(rootPath: vscode.Uri) {
     }
   });
 
-  vscode.commands.registerCommand('zenView.searchInFiles', async () => {
+  const searchInFilesDisposable = vscode.commands.registerCommand('zenView.searchInFiles', async () => {
     let inputBox = vscode.window.createInputBox();
     let buttons: ZenViewSearchButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
     inputBox.buttons = buttons;
@@ -163,22 +163,25 @@ async function registerFunctions(rootPath: vscode.Uri) {
       let files = await zenViewUtil.getAllZenFiles();
 
       for (let file of files) {
-        let text = readFile(file.fileUri, (err, text) => {
+        readFile(file.fileUri, (err, text) => {
           if (err) return;
 
-          let indices = search(text.toString(), inputBox.value, filters);
-          if (indices.length > 0) {
+          let searchResults = search(text.toString(), inputBox.value, filters);
+          if (searchResults.length > 0) {
             /* TODO: Show findings in view */
+            console.log(`Found ${searchResults.length} matches in ${file.fileUri}`);
+            searchResults.forEach(result => {
+              console.log(`Match: "${result.text}" at line ${result.range.start.line + 1}, character ${result.range.start.character + 1}`);
+            });
           }
         });
-
       }
     });
     inputBox.show();
   });
 }
 
-function search(text: string, key: string, filters: SearchFilter[]): number[] {
+function search(text: string, key: string, filters: SearchFilter[]): SearchResult[] {
   let searchAlgorithm = new SearchAlgorithm();
   return searchAlgorithm.search(text, key, filters);
 }

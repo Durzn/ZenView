@@ -1,40 +1,60 @@
-import { BaseFilter, FilterResult, SearchFilter } from "./SearchFilters";
+import { BaseFilter, SearchFilter } from "./SearchFilters";
+import * as vscode from 'vscode';
+
+export interface SearchResult {
+    text: string;
+    range: vscode.Range;
+}
 
 export class SearchAlgorithm {
-    public search(text: string, key: string, filters: SearchFilter[]): number[] {
-        let indices: number[] = [];
-
+    public search(text: string, key: string, filters: SearchFilter[]): SearchResult[] {
         if (key === '') {
             return [];
         }
 
         if (filters.length > 0) {
-            indices = this.searchWithFilters(text, key, filters);
+            return this.searchWithFilters(text, key, filters);
+        } else {
+            return this.searchWithoutFilters(text, key);
         }
-        else {
-            indices = this.searchWithoutFilters(text, key);
-        }
-
-        return indices;
     }
 
-    private searchWithoutFilters(text: string, key: string) {
-        let matches = [...text.matchAll(new RegExp(key, "gm"))];
-        matches = matches.filter(match => match.index !== undefined);
-        return matches.map(match => match.index!);
+    private searchWithoutFilters(text: string, key: string): SearchResult[] {
+        const results: SearchResult[] = [];
+        const lines = text.split('\n');
+
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+            const line = lines[lineIndex];
+            const matches = [...line.matchAll(new RegExp(this.escapeRegExp(key), "gi"))];
+
+            for (const match of matches) {
+                if (match.index !== undefined) {
+                    const startPos = new vscode.Position(lineIndex, match.index);
+                    const endPos = new vscode.Position(lineIndex, match.index + match[0].length);
+                    const range = new vscode.Range(startPos, endPos);
+
+                    results.push({
+                        text: match[0],
+                        range: range
+                    });
+                }
+            }
+        }
+
+        return results;
     }
 
-    private searchWithFilters(text: string, key: string, filters: SearchFilter[]) {
-        let indices: number[] = [];
-        let filterResults: FilterResult[] = new BaseFilter().filterText(text, key);
+    private searchWithFilters(text: string, key: string, filters: SearchFilter[]): SearchResult[] {
+        let results: SearchResult[] = new BaseFilter().filterText(text, key);
 
-        for (let filter of filters) {
-            filterResults = filter.filterResults(filterResults, key);
-        }
-        for (let result of filterResults) {
-            indices = indices.concat(result.index);
+        for (const filter of filters) {
+            results = filter.filterResults(results, key);
         }
 
-        return indices;
+        return results;
+    }
+
+    private escapeRegExp(string: string): string {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
 }
