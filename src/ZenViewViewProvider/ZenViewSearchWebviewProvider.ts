@@ -29,7 +29,7 @@ export class ZenViewSearchWebviewProvider implements vscode.WebviewViewProvider 
             localResourceRoots: [this._extensionUri]
         };
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview, this._extensionUri);
 
         // Handle messages from the webview
         webviewView.webview.onDidReceiveMessage(async (data) => {
@@ -95,13 +95,19 @@ export class ZenViewSearchWebviewProvider implements vscode.WebviewViewProvider 
         });
     }
 
-    private _getHtmlForWebview(webview: vscode.Webview) {
+    private _getHtmlForWebview(webview: vscode.Webview, extensionUri: vscode.Uri) {
+
+
+        const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'node_modules', '@vscode/codicons', 'dist', 'codicon.css'));
+
+
         return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZenView Search</title>
+	<link href="${codiconsUri}" rel="stylesheet" />
     <style>
         body {
             font-family: var(--vscode-font-family);
@@ -216,13 +222,13 @@ export class ZenViewSearchWebviewProvider implements vscode.WebviewViewProvider 
         
         <div class="search-options">
             <button class="option-button" id="wholeWordBtn" title="Match Whole Word">
-                <span class="icon">𝐀</span>Aa
+				<div class="icon"><i class="codicon codicon-whole-word"></i></div>
             </button>
             <button class="option-button" id="caseSensitiveBtn" title="Match Case">
-                <span class="icon">🔤</span>Aa
+				<div class="icon"><i class="codicon codicon-case-sensitive"></i></div>
             </button>
             <button class="option-button" id="regexBtn" title="Use Regular Expression">
-                <span class="icon">.*</span>.*
+				<div class="icon"><i class="codicon codicon-regex"></i></div>
             </button>
         </div>
         
