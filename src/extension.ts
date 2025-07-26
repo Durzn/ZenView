@@ -11,10 +11,11 @@ import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton, ZenViewS
 import { SearchFilter } from './SearchFilters';
 import { SearchAlgorithm, SearchResult } from './SearchAlgorithm';
 import { readFile, writeFile, stat, mkdir, rename } from 'fs';
-import { ZenViewSearchProvider } from './ZenViewViewProvider/ZenViewSearchProvider';
+import { SearchResultItem, ZenViewSearchResultsProvider } from './ZenViewViewProvider/ZenViewSearchResultsProvider';
 const fs = require('fs');
 
 const zenViewProvider = new ZenViewTreeDataProvider();
+const searchResultsProvider = new ZenViewSearchResultsProvider();
 
 export function activate(context: vscode.ExtensionContext) {
   let rootPath: vscode.Uri | undefined = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri : undefined;
@@ -23,11 +24,8 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
-  const searchProvider = new ZenViewSearchProvider(context.extensionUri);
-
   vscode.window.registerTreeDataProvider('zenview-explorer', zenViewProvider);
-
-  vscode.window.registerWebviewViewProvider('zenview-search', searchProvider);
+  vscode.window.registerTreeDataProvider('zenview-search-results', searchResultsProvider);
 
   registerFunctions(rootPath);
 
@@ -152,33 +150,96 @@ async function registerFunctions(rootPath: vscode.Uri) {
     }
   });
 
+  // Command to open a specific search result
+  vscode.commands.registerCommand('zenView.openSearchResult', async (filePath: string, searchResult: SearchResult) => {
+    const uri = vscode.Uri.file(zenViewUtil.getAbsolutePath(filePath));
+    const document = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(document);
+
+    // Navigate to the specific line and character
+    const position = new vscode.Position(searchResult.range.start.line, searchResult.range.start.character);
+    const range = new vscode.Range(position, new vscode.Position(searchResult.range.end.line, searchResult.range.end.character));
+
+    editor.selection = new vscode.Selection(range.start, range.end);
+    editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+  });
+
+  // Command to clear search results
+  vscode.commands.registerCommand('zenView.clearSearchResults', () => {
+    searchResultsProvider.clearResults();
+  });
+
   const searchInFilesDisposable = vscode.commands.registerCommand('zenView.searchInFiles', async () => {
     let inputBox = vscode.window.createInputBox();
     let buttons: ZenViewSearchButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
     inputBox.buttons = buttons;
+
+    // Clear previous results when starting a new search
+    searchResultsProvider.clearResults();
+
     inputBox.onDidTriggerButton(async (button) => {
       let zenButton = button as ZenViewSearchButton;
       zenButton.toggle();
-      let filters = buttons.filter(button => button.isActive).map(button => button.searchFilter);
-      let files = await zenViewUtil.getAllZenFiles();
+      performSearch(inputBox.value, buttons);
+    });
 
-      for (let file of files) {
-        readFile(file.fileUri, (err, text) => {
-          if (err) return;
-
-          let searchResults = search(text.toString(), inputBox.value, filters);
-          if (searchResults.length > 0) {
-            /* TODO: Show findings in view */
-            console.log(`Found ${searchResults.length} matches in ${file.fileUri}`);
-            searchResults.forEach(result => {
-              console.log(`Match: "${result.text}" at line ${result.range.start.line + 1}, character ${result.range.start.character + 1}`);
-            });
-          }
-        });
+    inputBox.onDidChangeValue((value) => {
+      if (value.trim()) {
+        performSearch(value, buttons);
+      } else {
+        searchResultsProvider.clearResults();
       }
     });
+
+    inputBox.onDidAccept(() => {
+      if (inputBox.value.trim()) {
+        performSearch(inputBox.value, buttons);
+      }
+      inputBox.hide();
+    });
+
     inputBox.show();
   });
+
+  async function performSearch(searchTerm: string, buttons: ZenViewSearchButton[]) {
+    if (!searchTerm.trim()) {
+      searchResultsProvider.clearResults();
+      return;
+    }
+
+    let filters = buttons.filter(button => button.isActive).map(button => button.searchFilter);
+    let files = await zenViewUtil.getAllZenFiles();
+    let allSearchResults: SearchResultItem[] = [];
+    let processedFiles = 0;
+
+    const searchPromises = files.map(file => {
+      return new Promise<void>((resolve) => {
+        readFile(file.fileUri, (err, text) => {
+          if (err) {
+            resolve();
+            return;
+          }
+
+          let searchResults = search(text.toString(), searchTerm, filters);
+          if (searchResults.length > 0) {
+            allSearchResults.push({
+              filePath: file.fileUri,
+              results: searchResults
+            });
+          }
+
+          processedFiles++;
+          resolve();
+        });
+      });
+    });
+
+    // Wait for all searches to complete
+    await Promise.all(searchPromises);
+
+    // Update the tree view with results
+    searchResultsProvider.updateSearchResults(allSearchResults, searchTerm);
+  }
 }
 
 function search(text: string, key: string, filters: SearchFilter[]): SearchResult[] {
