@@ -7,11 +7,10 @@ import { ZenViewFile } from './ZenViewFile';
 import * as Path from 'path';
 import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
-import { CaseMatcherButton, RegexMatcherButton, WholeWordMatcherButton, ZenViewSearchButton } from './ZenViewInputBoxButtons';
-import { SearchFilter } from './SearchFilters';
-import { SearchAlgorithm, SearchResult } from './SearchAlgorithm';
+import { SearchResult } from './SearchAlgorithm';
 import { readFile, writeFile, stat, mkdir, rename } from 'fs';
-import { SearchResultItem, ZenViewSearchResultsProvider } from './ZenViewViewProvider/ZenViewSearchResultsProvider';
+import { ZenViewSearchResultsProvider } from './ZenViewViewProvider/ZenViewSearchResultsProvider';
+import { ZenViewSearchWebviewProvider } from './ZenViewViewProvider/ZenViewSearchWebviewProvider';
 const fs = require('fs');
 
 const zenViewProvider = new ZenViewTreeDataProvider();
@@ -24,8 +23,11 @@ export function activate(context: vscode.ExtensionContext) {
     return;
   }
 
+  const searchWebviewProvider = new ZenViewSearchWebviewProvider(context.extensionUri, searchResultsProvider);
+
   vscode.window.registerTreeDataProvider('zenview-explorer', zenViewProvider);
   vscode.window.registerTreeDataProvider('zenview-search-results', searchResultsProvider);
+  vscode.window.registerWebviewViewProvider('zenview-search-panel', searchWebviewProvider);
 
   registerFunctions(rootPath);
 
@@ -168,81 +170,4 @@ async function registerFunctions(rootPath: vscode.Uri) {
   vscode.commands.registerCommand('zenView.clearSearchResults', () => {
     searchResultsProvider.clearResults();
   });
-
-  const searchInFilesDisposable = vscode.commands.registerCommand('zenView.searchInFiles', async () => {
-    let inputBox = vscode.window.createInputBox();
-    let buttons: ZenViewSearchButton[] = [new WholeWordMatcherButton(), new CaseMatcherButton(), new RegexMatcherButton()];
-    inputBox.buttons = buttons;
-
-    // Clear previous results when starting a new search
-    searchResultsProvider.clearResults();
-
-    inputBox.onDidTriggerButton(async (button) => {
-      let zenButton = button as ZenViewSearchButton;
-      zenButton.toggle();
-      performSearch(inputBox.value, buttons);
-    });
-
-    inputBox.onDidChangeValue((value) => {
-      if (value.trim()) {
-        performSearch(value, buttons);
-      } else {
-        searchResultsProvider.clearResults();
-      }
-    });
-
-    inputBox.onDidAccept(() => {
-      if (inputBox.value.trim()) {
-        performSearch(inputBox.value, buttons);
-      }
-      inputBox.hide();
-    });
-
-    inputBox.show();
-  });
-
-  async function performSearch(searchTerm: string, buttons: ZenViewSearchButton[]) {
-    if (!searchTerm.trim()) {
-      searchResultsProvider.clearResults();
-      return;
-    }
-
-    let filters = buttons.filter(button => button.isActive).map(button => button.searchFilter);
-    let files = await zenViewUtil.getAllZenFiles();
-    let allSearchResults: SearchResultItem[] = [];
-    let processedFiles = 0;
-
-    const searchPromises = files.map(file => {
-      return new Promise<void>((resolve) => {
-        readFile(file.fileUri, (err, text) => {
-          if (err) {
-            resolve();
-            return;
-          }
-
-          let searchResults = search(text.toString(), searchTerm, filters);
-          if (searchResults.length > 0) {
-            allSearchResults.push({
-              filePath: file.fileUri,
-              results: searchResults
-            });
-          }
-
-          processedFiles++;
-          resolve();
-        });
-      });
-    });
-
-    // Wait for all searches to complete
-    await Promise.all(searchPromises);
-
-    // Update the tree view with results
-    searchResultsProvider.updateSearchResults(allSearchResults, searchTerm);
-  }
-}
-
-function search(text: string, key: string, filters: SearchFilter[]): SearchResult[] {
-  let searchAlgorithm = new SearchAlgorithm();
-  return searchAlgorithm.search(text, key, filters);
 }

@@ -155,10 +155,6 @@
 			{
 				"command": "zenView.pickFile",
 				"title": "Open a file that was added to ZenView from a dropdown menu."
-			},
-			{
-				"command": "zenView.searchInFiles",
-				"title": "Search text within all files that were added to the ZenView."
 			}
 		],
 		"viewsContainers": {
@@ -173,12 +169,17 @@
 		"views": {
 			"zenview": [
 				{
-					"id": "zenview-explorer",
-					"name": "ZenView"
+					"id": "zenview-search-panel",
+					"name": "Search",
+					"type": "webview"
 				},
 				{
 					"id": "zenview-search-results",
-					"name": "ZenView Search Results"
+					"name": "Search Results"
+				},
+				{
+					"id": "zenview-explorer",
+					"name": "Explorer"
 				}
 			]
 		}
