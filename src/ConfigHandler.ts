@@ -92,7 +92,7 @@ export class ConfigHandler {
                 return ((e.path === absolutePath) || e.path === relativePath);
             }).length <= 0) {
                 let fileName = zenViewUtil.getFileName(path);
-                let jsonObj = { "name": fileName, "path": path };
+                let jsonObj = { "name": fileName, "path": zenViewUtil.getUnresolvedRelativePath(relativePath) };
                 currentPaths.push(jsonObj);
                 await config.update("zenPaths", currentPaths);
                 return true;
@@ -123,7 +123,8 @@ export class ConfigHandler {
 
         for (let zenTuple of zenTuples) {
             if (zenTuple.hasOwnProperty("name") && zenTuple.hasOwnProperty("path")) {
-                zenFiles.push(zenViewUtil.convertFileToZenFile(zenTuple.path, vscode.FileType.Unknown, zenTuple.name));
+                const resolvedPath = zenViewUtil.resolveWorkspaceFolder(zenTuple.path);
+                zenFiles.push(zenViewUtil.convertFileToZenFile(resolvedPath, vscode.FileType.Unknown, zenTuple.name));
             }
         }
         /* If no given path is valid, make sure at least the root path is active! */
@@ -143,7 +144,7 @@ export class ConfigHandler {
 
         for (let zenTuple of zenTuples) {
             if (zenTuple.hasOwnProperty("name") && zenTuple.hasOwnProperty("path")) {
-                let absPath = zenViewUtil.getAbsolutePath(zenTuple.path);
+                let absPath = zenViewUtil.resolveWorkspaceFolder(zenTuple.path);
                 let fileExists = fs.statSync(absPath);
                 if (fileExists) {
                     let fileType: vscode.FileType = zenViewUtil.getFileType(vscode.Uri.file(absPath), ConfigHandler.getUsedStatFunction());
