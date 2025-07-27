@@ -169,18 +169,20 @@
 		"views": {
 			"zenview": [
 				{
+					"id": "zenview-explorer",
+					"name": "ZenView Explorer",
+					"icon": "./assets/zen_view.png"
+				},
+				{
 					"id": "zenview-search-panel",
-					"name": "Search",
-					"type": "webview"
+					"name": "ZenView Search",
+					"type": "webview",
+					"icon": "$(search-view-icon)"
 				},
 				{
 					"id": "zenview-search-results",
-					"name": "Search Results",
-					"icon": "./assets/zen_view_search.png"
-				},
-				{
-					"id": "zenview-explorer",
-					"name": "Explorer"
+					"name": "ZenView Search Results",
+					"icon": "$(search-details)"
 				}
 			]
 		}
