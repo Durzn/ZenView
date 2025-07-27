@@ -34,7 +34,7 @@ function createSearchResult(text: string, line: number, startChar: number, endCh
     const startPos = new vscode.Position(line, startChar);
     const endPos = new vscode.Position(line, endChar);
     const range = new vscode.Range(startPos, endPos);
-    return { text, range, line: text };
+    return { finding: text, range, line: text };
 }
 
 // Helper function to compare SearchResult objects
@@ -42,7 +42,7 @@ function expectSearchResultsToEqual(actual: SearchResult[], expected: SearchResu
     expect(actual.length).toBe(expected.length);
 
     for (let i = 0; i < actual.length; i++) {
-        expect(actual[i].text).toBe(expected[i].text);
+        expect(actual[i].finding).toBe(expected[i].finding);
         expect(actual[i].range.start.line).toBe(expected[i].range.start.line);
         expect(actual[i].range.start.character).toBe(expected[i].range.start.character);
         expect(actual[i].range.end.line).toBe(expected[i].range.end.line);

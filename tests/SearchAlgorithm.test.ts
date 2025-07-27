@@ -35,7 +35,7 @@ function createSearchResult(text: string, line: number, startChar: number, endCh
     const startPos = new Position(line, startChar);
     const endPos = new Position(line, endChar);
     const range = new Range(startPos, endPos);
-    return { text, range, line: text };
+    return { finding: text, range, line: text };
 }
 
 // Helper function to compare SearchResult objects
@@ -43,7 +43,7 @@ function expectSearchResultsToEqual(actual: SearchResult[], expected: SearchResu
     expect(actual.length).toBe(expected.length);
 
     for (let i = 0; i < actual.length; i++) {
-        expect(actual[i].text).toBe(expected[i].text);
+        expect(actual[i].finding).toBe(expected[i].finding);
         expect(actual[i].range.start.line).toBe(expected[i].range.start.line);
         expect(actual[i].range.start.character).toBe(expected[i].range.start.character);
         expect(actual[i].range.end.line).toBe(expected[i].range.end.line);
@@ -162,7 +162,7 @@ test('MultiLineSearch', () => {
     let actual = filter.filterText(testString, key);
     console.log('Actual results from BaseFilter:');
     actual.forEach((result, index) => {
-        console.log(`  [${index}] text: "${result.text}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
+        console.log(`  [${index}] text: "${result.finding}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
     });
 
     // Let's manually verify the positions in each line:
@@ -179,7 +179,7 @@ test('MultiLineSearch', () => {
 
     console.log('Expected results:');
     expected.forEach((result, index) => {
-        console.log(`  [${index}] text: "${result.text}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
+        console.log(`  [${index}] text: "${result.finding}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
     });
 
     expectSearchResultsToEqual(actual, expected);
@@ -210,12 +210,12 @@ test('SearchAlgorithmVsBaseFilter', () => {
 
     console.log('SearchAlgorithm results:');
     algorithmResults.forEach((result, index) => {
-        console.log(`  [${index}] text: "${result.text}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
+        console.log(`  [${index}] text: "${result.finding}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
     });
 
     console.log('\nBaseFilter results:');
     filterResults.forEach((result, index) => {
-        console.log(`  [${index}] text: "${result.text}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
+        console.log(`  [${index}] text: "${result.finding}", line: ${result.range.start.line}, start: ${result.range.start.character}, end: ${result.range.end.character}`);
     });
 
     // They should produce the same results
