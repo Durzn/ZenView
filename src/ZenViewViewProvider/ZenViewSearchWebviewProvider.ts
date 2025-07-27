@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { MatchCaseFilter, RegexFilter, SearchFilter, WholeWordFilter } from '../SearchFilters';
-import { SearchAlgorithm, SearchResult } from '../SearchAlgorithm';
+import { SearchAlgorithm } from '../SearchAlgorithm';
 import { zenViewUtil } from '../Util/ZenViewUtil';
 import { readFile } from 'fs';
 import { SearchResultItem, ZenViewSearchResultsProvider } from './ZenViewSearchResultsProvider';
@@ -264,9 +264,9 @@ export class ZenViewSearchWebviewProvider implements vscode.WebviewViewProvider 
             button.classList.toggle('active', searchOptions[option]);
         }
         
-        wholeWordBtn.addEventListener('click', () => toggleOption(wholeWordBtn, 'wholeWord'));
-        caseSensitiveBtn.addEventListener('click', () => toggleOption(caseSensitiveBtn, 'caseSensitive'));
-        regexBtn.addEventListener('click', () => toggleOption(regexBtn, 'regex'));
+        wholeWordBtn.addEventListener('click', () => {toggleOption(wholeWordBtn, 'wholeWord'); performSearch();});
+        caseSensitiveBtn.addEventListener('click', () => {toggleOption(caseSensitiveBtn, 'caseSensitive'); performSearch();});
+        regexBtn.addEventListener('click', () => {toggleOption(regexBtn, 'regex'); performSearch();});
         
         // Search functionality
         function performSearch() {
