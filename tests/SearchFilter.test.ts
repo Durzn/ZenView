@@ -34,7 +34,7 @@ function createSearchResult(text: string, line: number, startChar: number, endCh
     const startPos = new vscode.Position(line, startChar);
     const endPos = new vscode.Position(line, endChar);
     const range = new vscode.Range(startPos, endPos);
-    return { text, range };
+    return { text, range, line: text };
 }
 
 // Helper function to compare SearchResult objects
@@ -102,6 +102,16 @@ test('WholeWordFilterResults', () => {
     let expected = [
         createSearchResult("in", 0, 22, 24)  // Only the standalone "in"
     ];
+    let actual = filter.filterResults(results, key);
+    expectSearchResultsToEqual(actual, expected);
+});
+
+test('WholeWordFilterWordNotWhole', () => {
+    let filter = new WholeWordFilter();
+    let testString = "this is a test stringina test file";
+    let key = "in";
+    let results = [createSearchResult(testString, 0, 0, testString.length)];
+    let expected: SearchResult[] = [];
     let actual = filter.filterResults(results, key);
     expectSearchResultsToEqual(actual, expected);
 });

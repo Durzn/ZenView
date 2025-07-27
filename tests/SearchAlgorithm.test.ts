@@ -35,7 +35,7 @@ function createSearchResult(text: string, line: number, startChar: number, endCh
     const startPos = new Position(line, startChar);
     const endPos = new Position(line, endChar);
     const range = new Range(startPos, endPos);
-    return { text, range };
+    return { text, range, line: text };
 }
 
 // Helper function to compare SearchResult objects
@@ -79,6 +79,15 @@ test('WholeWordFilterText', () => {
     let expected = [
         createSearchResult("in", 0, 22, 24)  // Only the standalone "in", not the "in" in "string"
     ];
+    let actual = filter.filterText(testString, key);
+    expectSearchResultsToEqual(actual, expected);
+});
+
+test('WholeWordFilterWordNotWhole', () => {
+    let filter = new WholeWordFilter();
+    let testString = "this is a test stringina test file";
+    let key = "in";
+    let expected: SearchResult[] = [];
     let actual = filter.filterText(testString, key);
     expectSearchResultsToEqual(actual, expected);
 });
