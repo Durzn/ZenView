@@ -22,6 +22,14 @@ export class ZenViewUtil {
         return "./" + Path.relative(this.rootPath, path);
     }
 
+    public getUnresolvedRelativePath(path: string): string {
+        /* Workaround for legacy settings where relative paths were created with "./" */
+        if (path.startsWith("./")) {
+            path = path.replace("./", "${workspaceFolder}/");
+        }
+        return path;
+    }
+
     public getFileName(path: string): string {
         let returnString: string | undefined;
         returnString = path.split('\\').pop();
@@ -90,6 +98,33 @@ export class ZenViewUtil {
             }
         }
         return zenFiles;
+    }
+
+    public resolveWorkspaceFolder(input: string): string {
+        /* Workaround for legacy settings where relative paths were created with "./" */
+        input = this.getUnresolvedRelativePath(input);
+        if (!vscode.workspace.workspaceFolders) { return input; }
+
+        let path = input;
+        const workspaceFolder = "${workspaceFolder}";
+
+        if (input.includes(workspaceFolder)) {
+            let resolvedWorkspacePath = "";
+            let workspaceUris = vscode.workspace.workspaceFolders.flatMap((workspaceFolder) => { return workspaceFolder.uri; });
+
+            if (!workspaceUris) { return input; }
+
+            for (let workspaceUri of workspaceUris) {
+                const workspace = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(input.replace(workspaceFolder, workspaceUri.fsPath)));
+                if (workspace) {
+                    resolvedWorkspacePath = workspace.uri.fsPath;
+                    break;
+                }
+            }
+            path = input.replace(workspaceFolder, resolvedWorkspacePath);
+        }
+
+        return path;
     }
 }
 
