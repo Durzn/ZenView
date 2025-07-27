@@ -2,6 +2,10 @@
 
 All notable changes to the "zenview" extension will be documented in this file.
 
+## [2.1.2] - 2025-07-27
+### Added
+- Made search results look more like native search
+
 ## [2.1.1] - 2025-07-27
 ### Added
 - Minified extension
