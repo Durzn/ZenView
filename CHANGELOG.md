@@ -2,6 +2,11 @@
 
 All notable changes to the "zenview" extension will be documented in this file.
 
+## [2.0.0] - 2025-07-26
+### Added
+- Search and search result views
+- Searching happens over all files part of the ZenView (single pinned files and recursive through pinned directories)
+
 ## [1.6.1] - 2023-02-03
 ### Changed
 - Added missing changelog entry for 1.6.0
