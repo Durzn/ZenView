@@ -2,6 +2,10 @@
 
 All notable changes to the "zenview" extension will be documented in this file.
 
+## [2.1.0] - 2025-07-27
+### Added
+- Settings now support ${workspaceFolder}
+
 ## [2.0.1] - 2025-07-27
 ### Added
 - Added icons for new views
