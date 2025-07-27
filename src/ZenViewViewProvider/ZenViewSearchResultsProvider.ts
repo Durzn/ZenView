@@ -9,7 +9,7 @@ export interface SearchResultItem {
 
 export class ZenViewSearchResultsTreeItem extends vscode.TreeItem {
     constructor(
-        public readonly label: string,
+        public readonly label: string | vscode.TreeItemLabel,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         public readonly filePath?: string,
         public readonly searchResult?: SearchResult,
@@ -19,7 +19,7 @@ export class ZenViewSearchResultsTreeItem extends vscode.TreeItem {
 
         if (this.searchResult) {
             // This is a search result item
-            this.tooltip = `Line ${this.searchResult.range.start.line + 1}: ${this.searchResult.text}`;
+            this.tooltip = `Line ${this.searchResult.range.start.line + 1}: ${this.searchResult.line}`;
             this.contextValue = 'searchResult';
             this.iconPath = new vscode.ThemeIcon('symbol-text');
 
@@ -112,22 +112,31 @@ export class ZenViewSearchResultsProvider implements vscode.TreeDataProvider<Zen
             const fileResults = this.searchResults.find(item => item.filePath === element.filePath);
             if (fileResults) {
                 const resultItems = fileResults.results.map(result => {
-                    const lineNumber = result.range.start.line + 1;
-                    const preview = result.text.trim();
-                    const label = `Line ${lineNumber}: ${preview}`;
-
-                    return new ZenViewSearchResultsTreeItem(
-                        label,
+                    // Create the tree item
+                    const item = new ZenViewSearchResultsTreeItem(
+                        this.createHighlightedLabel(result, this.searchTerm),
                         vscode.TreeItemCollapsibleState.None,
                         element.filePath,
                         result
                     );
+
+                    return item;
                 });
                 return Promise.resolve(resultItems);
             }
         }
 
         return Promise.resolve([]);
+    }
+
+    private createHighlightedLabel(result: SearchResult, searchTerm: string): vscode.TreeItemLabel {
+
+        const highlights: [number, number][] = [[result.range.start.character, result.range.end.character]];
+
+        return {
+            label: result.line,
+            highlights: highlights
+        };
     }
 
     getParent(element: ZenViewSearchResultsTreeItem): vscode.ProviderResult<ZenViewSearchResultsTreeItem> {
