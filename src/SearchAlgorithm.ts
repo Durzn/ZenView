@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 export interface SearchResult {
     text: string;
     range: vscode.Range;
+    line?: string;
 }
 
 export class SearchAlgorithm {
@@ -35,7 +36,8 @@ export class SearchAlgorithm {
 
                     results.push({
                         text: match[0],
-                        range: range
+                        range: range,
+                        line: line
                     });
                 }
             }

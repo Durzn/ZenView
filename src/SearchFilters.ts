@@ -27,7 +27,8 @@ export class BaseFilter implements SearchFilter {
 
                     results.push({
                         text: match[0],
-                        range: range
+                        range: range,
+                        line: line
                     });
                 }
             }
@@ -49,7 +50,7 @@ export class WholeWordFilter implements SearchFilter {
     public filterText(text: string, key: string): SearchResult[] {
         const results: SearchResult[] = [];
         const lines = text.split('\n');
-        const regExp = new RegExp(`\\b${this.escapeRegExp(key)}\\b`, 'gi');
+        const regExp = new RegExp(`(?<!\\w)${this.escapeRegExp(key)}(?!\\w)`, 'gi');
 
         for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
             const line = lines[lineIndex];
@@ -74,10 +75,13 @@ export class WholeWordFilter implements SearchFilter {
 
     public filterResults(results: SearchResult[], key: string): SearchResult[] {
         const filteredResults: SearchResult[] = [];
-        const regExp = new RegExp(`\\b${this.escapeRegExp(key)}\\b`, 'gi');
+        const regExp = new RegExp(`(?<!\\w)${this.escapeRegExp(key)}(?!\\w)`, 'gi');
 
         for (const result of results) {
-            const matches = [...result.text.matchAll(regExp)];
+            if (!result.line) {
+                continue;
+            }
+            const matches = [...result.line.matchAll(regExp)];
 
             for (const match of matches) {
                 if (match.index !== undefined) {
@@ -98,6 +102,7 @@ export class WholeWordFilter implements SearchFilter {
             }
         }
 
+        console.log("Filtered results", filteredResults);
         return filteredResults;
     }
 
