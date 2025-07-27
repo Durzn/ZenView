@@ -3,3 +3,5 @@ node_modules
 src/
 tsconfig.json
 *.vsix
+**/*.ts
+!node_modules/@vscode/codicons/dist/**/*
