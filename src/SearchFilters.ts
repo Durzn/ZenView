@@ -26,7 +26,7 @@ export class BaseFilter implements SearchFilter {
                     const range = new vscode.Range(startPos, endPos);
 
                     results.push({
-                        text: match[0],
+                        finding: match[0],
                         range: range,
                         line: line
                     });
@@ -63,8 +63,9 @@ export class WholeWordFilter implements SearchFilter {
                     const range = new vscode.Range(startPos, endPos);
 
                     results.push({
-                        text: match[0],
-                        range: range
+                        finding: match[0],
+                        range: range,
+                        line: line
                     });
                 }
             }
@@ -95,8 +96,9 @@ export class WholeWordFilter implements SearchFilter {
                     const newRange = new vscode.Range(newStartPos, newEndPos);
 
                     filteredResults.push({
-                        text: match[0],
-                        range: newRange
+                        finding: match[0],
+                        range: newRange,
+                        line: result.line
                     });
                 }
             }
@@ -128,8 +130,9 @@ export class MatchCaseFilter implements SearchFilter {
                     const range = new vscode.Range(startPos, endPos);
 
                     results.push({
-                        text: match[0],
-                        range: range
+                        finding: match[0],
+                        range: range,
+                        line: line
                     });
                 }
             }
@@ -143,7 +146,7 @@ export class MatchCaseFilter implements SearchFilter {
         const regExp = new RegExp(this.escapeRegExp(key), 'g');
 
         for (const result of results) {
-            const matches = [...result.text.matchAll(regExp)];
+            const matches = [...result.finding.matchAll(regExp)];
 
             for (const match of matches) {
                 if (match.index !== undefined) {
@@ -157,8 +160,9 @@ export class MatchCaseFilter implements SearchFilter {
                     const newRange = new vscode.Range(newStartPos, newEndPos);
 
                     filteredResults.push({
-                        text: match[0],
-                        range: newRange
+                        finding: match[0],
+                        range: newRange,
+                        line: result.line
                     });
                 }
             }
@@ -191,8 +195,9 @@ export class RegexFilter implements SearchFilter {
                         const range = new vscode.Range(startPos, endPos);
 
                         results.push({
-                            text: match[0],
-                            range: range
+                            finding: match[0],
+                            range: range,
+                            line: line
                         });
                     }
                 }
@@ -212,7 +217,7 @@ export class RegexFilter implements SearchFilter {
             const regExp = new RegExp(key, 'gi');
 
             for (const result of results) {
-                const matches = [...result.text.matchAll(regExp)];
+                const matches = [...result.finding.matchAll(regExp)];
 
                 for (const match of matches) {
                     if (match.index !== undefined) {
@@ -226,8 +231,9 @@ export class RegexFilter implements SearchFilter {
                         const newRange = new vscode.Range(newStartPos, newEndPos);
 
                         filteredResults.push({
-                            text: match[0],
-                            range: newRange
+                            finding: match[0],
+                            range: newRange,
+                            line: result.line
                         });
                     }
                 }

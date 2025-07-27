@@ -2,9 +2,9 @@ import { BaseFilter, SearchFilter } from "./SearchFilters";
 import * as vscode from 'vscode';
 
 export interface SearchResult {
-    text: string;
+    finding: string;
     range: vscode.Range;
-    line?: string;
+    line: string;
 }
 
 export class SearchAlgorithm {
@@ -35,7 +35,7 @@ export class SearchAlgorithm {
                     const range = new vscode.Range(startPos, endPos);
 
                     results.push({
-                        text: match[0],
+                        finding: match[0],
                         range: range,
                         line: line
                     });
