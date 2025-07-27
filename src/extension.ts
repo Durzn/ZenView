@@ -8,7 +8,7 @@ import * as Path from 'path';
 import { ZenFileSystemHandler } from './ZenFileSystemHandler';
 import { ZenViewQuickPickItem } from './ZenViewQuickPickItem';
 import { SearchResult } from './SearchAlgorithm';
-import { readFile, writeFile, stat, mkdir, rename } from 'fs';
+import { writeFile, stat, mkdir, rename } from 'fs';
 import { ZenViewSearchResultsProvider } from './ZenViewViewProvider/ZenViewSearchResultsProvider';
 import { ZenViewSearchWebviewProvider } from './ZenViewViewProvider/ZenViewSearchWebviewProvider';
 const fs = require('fs');
