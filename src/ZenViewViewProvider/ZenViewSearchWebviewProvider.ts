@@ -208,28 +208,73 @@ export class ZenViewSearchWebviewProvider implements vscode.WebviewViewProvider 
             vertical-align: middle;
             margin-right: 4px;
         }
+
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-options-inline {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 4px;
+        }
+
+        .option-badge {
+            background-color: var(--vscode-button-secondaryBackground);
+            color: var(--vscode-button-secondaryForeground);
+            border: 1px solid var(--vscode-button-border);
+            border-radius: 3px;
+            padding: 2px 4px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 22px;
+            width: 22px;
+            transition: background-color 0.2s;
+        }
+
+        .option-badge:hover {
+            background-color: var(--vscode-button-secondaryHoverBackground);
+        }
+
+        .option-badge.active {
+            background-color: var(--vscode-button-background);
+            color: var(--vscode-button-foreground);
+        }
+
+        .search-input {
+            padding-right: 80px; /* Enough space for 3 badges + gap */
+        }
+
     </style>
 </head>
 <body>
     <div class="search-container">
-        <input 
-            type="text" 
-            id="searchInput" 
-            class="search-input" 
-            placeholder="Search in files..."
-            autocomplete="off"
-        />
-        
-        <div class="search-options">
-            <button class="option-button" id="wholeWordBtn" title="Match Whole Word">
-				<div class="icon"><i class="codicon codicon-whole-word"></i></div>
-            </button>
-            <button class="option-button" id="caseSensitiveBtn" title="Match Case">
-				<div class="icon"><i class="codicon codicon-case-sensitive"></i></div>
-            </button>
-            <button class="option-button" id="regexBtn" title="Use Regular Expression">
-				<div class="icon"><i class="codicon codicon-regex"></i></div>
-            </button>
+        <div class="search-input-wrapper">
+            <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Search in files..."
+                autocomplete="off"
+            />
+            <div class="search-options-inline">
+                <button class="option-badge" id="wholeWordBtn" title="Match Whole Word">
+                    <i class="codicon codicon-whole-word"></i>
+                </button>
+                <button class="option-badge" id="caseSensitiveBtn" title="Match Case">
+                    <i class="codicon codicon-case-sensitive"></i>
+                </button>
+                <button class="option-badge" id="regexBtn" title="Use Regular Expression">
+                    <i class="codicon codicon-regex"></i>
+                </button>
+            </div>
         </div>
         
         <div class="search-actions">
