@@ -5,3 +5,4 @@ tsconfig.json
 *.vsix
 **/*.ts
 !node_modules/@vscode/codicons/dist/**/*
+tests
